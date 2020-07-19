@@ -39,7 +39,7 @@ class CourseSerializer < ActiveModel::Serializer
     course_modules =  object.course_modules.where(module_id: 28).first
     if !course_modules.blank?
       sco_ids = course_modules.meetings.pluck(:sco_id)
-      attendances = Attendance.where('sco_id in (?) and end_time is not null', sco_ids).group_by(&:principal_id)
+      attendances = Attendance.where('sco_id in (?)', sco_ids).group_by(&:principal_id)
       attendances.map do |principal_id, p_attendances|
         principal = Principal.find_by_principal_id(principal_id)
         if !principal.blank?
