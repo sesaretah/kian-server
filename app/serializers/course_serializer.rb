@@ -1,7 +1,7 @@
 class CourseSerializer < ActiveModel::Serializer
   include Rails.application.routes.url_helpers
 
-  attributes :id, :title, :avarage, :number_of_meetings, :meetings
+  attributes :id, :title, :avarage, :number_of_meetings, :meetings, :attendances
 
   def id
     object.mid
@@ -32,6 +32,26 @@ class CourseSerializer < ActiveModel::Serializer
   def meetings
     course_modules =  object.course_modules.where(module_id: 28).first
     return course_modules.meetings.order("start_time ASC") if !course_modules.blank?
+  end
+
+  def attendances
+    result = []
+    course_modules =  object.course_modules.where(module_id: 28).first
+    if !course_modules.blank?
+      sco_ids = course_modules.meetings.pluck(:sco_id)
+      attendances = Attendance.where('sco_id in (?) and end_time is not null', sco_ids).group_by(&:principal_id)
+      attendances.map do |principal_id, p_attendances|
+        principal = Principal.find_by_principal_id(principal_id)
+        if !principal.blank?
+          sum = 0
+          for p_at in p_attendances
+            sum = p_at.end_time - p_at.start_time
+          end
+          result << {utid: principal.uid, sum: sum}
+        end
+      end
+    end
+    return result
   end
 
 end

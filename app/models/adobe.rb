@@ -13,4 +13,14 @@ class Adobe < ActiveRecord::Base
         end
     end
 
+    def self.import_principals
+        adobe_principals = Adobe.connection.exec_query("SELECT principal_id, name, login FROM adobe2.pps_principals")
+        for adobe_principal in adobe_principals
+            principal = Principal.where(principal_id: adobe_principal["principal_id"]).first
+            if principal.blank?
+                Principal.create(principal_id: adobe_principal["principal_id"], uid: adobe_principal["login"], name: adobe_principal["name"])
+            end
+        end
+    end
+
 end
