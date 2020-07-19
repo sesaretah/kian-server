@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  principal_id: 1
+  sco_id: 1
+  transcript_id: 1
+
+two:
+  principal_id: 1
+  sco_id: 1
+  transcript_id: 1

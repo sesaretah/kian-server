@@ -21,7 +21,7 @@ default: &default
 
 development:
   <<: *default
-  database: upm_dev
+  database: kian_dev
 
 
 # Warning: The database defined as "test" will be erased and
@@ -29,8 +29,26 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: tavan_test
+  database: kian_test
 
 production:
   <<: *default
-  database: tavan_prod
+  database: kian_prod
+
+external_moodle:
+  adapter: postgresql
+  encoding: unicode
+  pool: 50
+  host: 172.16.8.170
+  database: 10june
+  username: mdluser
+  password: K{4P_PU:kFbGzqM
+
+external_adobe:
+  adapter: postgresql
+  encoding: unicode
+  pool: 50
+  host: 172.16.8.170
+  database: adobeconnect
+  username: mdluser
+  password: K{4P_PU:kFbGzqM

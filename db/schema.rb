@@ -10,112 +10,57 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_22_134602) do
+ActiveRecord::Schema.define(version: 2020_07_19_173144) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "active_storage_attachments", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "record_type", null: false
-    t.bigint "record_id", null: false
-    t.bigint "blob_id", null: false
-    t.datetime "created_at", null: false
-    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
-    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
-  end
-
-  create_table "active_storage_blobs", force: :cascade do |t|
-    t.string "key", null: false
-    t.string "filename", null: false
-    t.string "content_type"
-    t.text "metadata"
-    t.bigint "byte_size", null: false
-    t.string "checksum", null: false
-    t.datetime "created_at", null: false
-    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
-  end
-
-  create_table "actuals", force: :cascade do |t|
-    t.integer "meta_id"
-    t.integer "user_id"
-    t.json "content"
+  create_table "attendances", force: :cascade do |t|
+    t.integer "principal_id"
+    t.integer "sco_id"
+    t.integer "transcript_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "uuid"
-    t.index ["uuid"], name: "index_actuals_on_uuid", unique: true
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.index ["principal_id"], name: "index_attendances_on_principal_id"
+    t.index ["sco_id"], name: "index_attendances_on_sco_id"
+    t.index ["transcript_id"], name: "index_attendances_on_transcript_id"
   end
 
-  create_table "comments", force: :cascade do |t|
-    t.text "content"
-    t.integer "user_id"
-    t.integer "parent_id"
-    t.integer "commentable_id"
-    t.string "commentable_type"
+  create_table "course_modules", force: :cascade do |t|
+    t.integer "module_id"
+    t.integer "course_id"
+    t.integer "mid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "reply_id"
-    t.index ["commentable_id"], name: "index_comments_on_commentable_id"
-    t.index ["commentable_type"], name: "index_comments_on_commentable_type"
-    t.index ["user_id"], name: "index_comments_on_user_id"
+    t.index ["course_id"], name: "index_course_modules_on_course_id"
+    t.index ["mid"], name: "index_course_modules_on_mid"
+    t.index ["module_id"], name: "index_course_modules_on_module_id"
   end
 
-  create_table "devices", force: :cascade do |t|
-    t.integer "user_id"
-    t.text "token"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_devices_on_user_id"
-  end
-
-  create_table "groups", force: :cascade do |t|
+  create_table "courses", force: :cascade do |t|
     t.string "title"
-    t.integer "user_id"
-    t.json "grouping"
+    t.string "serial"
+    t.integer "mid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_groups_on_user_id"
+    t.index ["mid"], name: "index_courses_on_mid"
   end
 
-  create_table "involvements", force: :cascade do |t|
-    t.integer "user_id"
-    t.integer "involveable_id"
-    t.string "involoveable_type"
-    t.string "status"
-    t.string "role"
+  create_table "meetings", force: :cascade do |t|
+    t.integer "course_module_id"
+    t.integer "sco_id"
+    t.integer "adobe_id"
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.integer "duration"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "involveable_type"
-    t.index ["involveable_id"], name: "index_involvements_on_involveable_id"
-    t.index ["involveable_type"], name: "index_involvements_on_involveable_type"
-    t.index ["user_id"], name: "index_involvements_on_user_id"
-  end
-
-  create_table "meta", force: :cascade do |t|
-    t.string "meta_type"
-    t.integer "user_id"
-    t.json "meta_schema"
-    t.string "title"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "label"
-  end
-
-  create_table "notifications", force: :cascade do |t|
-    t.integer "notifiable_id"
-    t.string "notifiable_type"
-    t.integer "source_user_id"
-    t.json "target_user_ids"
-    t.string "notification_type"
-    t.boolean "seen"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "custom_text"
-    t.json "target_user_hash"
-    t.index ["notifiable_id"], name: "index_notifications_on_notifiable_id"
-    t.index ["notifiable_type"], name: "index_notifications_on_notifiable_type"
-    t.index ["notification_type"], name: "index_notifications_on_notification_type"
-    t.index ["source_user_id"], name: "index_notifications_on_source_user_id"
+    t.integer "mid"
+    t.index ["course_module_id"], name: "index_meetings_on_course_module_id"
+    t.index ["mid"], name: "index_meetings_on_mid"
+    t.index ["sco_id"], name: "index_meetings_on_sco_id"
   end
 
   create_table "profiles", force: :cascade do |t|
@@ -126,24 +71,6 @@ ActiveRecord::Schema.define(version: 2020_05_22_134602) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id"
-    t.json "experties"
-    t.index ["user_id"], name: "index_profiles_on_user_id"
-  end
-
-  create_table "reports", force: :cascade do |t|
-    t.string "title"
-    t.text "content"
-    t.json "draft"
-    t.integer "user_id"
-    t.integer "task_id"
-    t.integer "work_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "uuid"
-    t.index ["task_id"], name: "index_reports_on_task_id"
-    t.index ["user_id"], name: "index_reports_on_user_id"
-    t.index ["uuid"], name: "index_reports_on_uuid"
-    t.index ["work_id"], name: "index_reports_on_work_id"
   end
 
   create_table "roles", force: :cascade do |t|
@@ -153,103 +80,6 @@ ActiveRecord::Schema.define(version: 2020_05_22_134602) do
     t.datetime "updated_at", null: false
     t.integer "user_id"
     t.boolean "default_role"
-    t.index ["user_id"], name: "index_roles_on_user_id"
-  end
-
-  create_table "settings", force: :cascade do |t|
-    t.integer "user_id"
-    t.boolean "private"
-    t.json "notification_setting"
-    t.json "blocked_list"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_settings_on_user_id"
-  end
-
-  create_table "status_changes", force: :cascade do |t|
-    t.integer "statusable_id"
-    t.string "statusable_type"
-    t.integer "status_id"
-    t.integer "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["status_id"], name: "index_status_changes_on_status_id"
-    t.index ["statusable_id"], name: "index_status_changes_on_statusable_id"
-    t.index ["statusable_type"], name: "index_status_changes_on_statusable_type"
-    t.index ["user_id"], name: "index_status_changes_on_user_id"
-  end
-
-  create_table "statuses", force: :cascade do |t|
-    t.string "title"
-    t.string "color"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "user_id"
-    t.boolean "confirmed"
-    t.integer "confirmed_by"
-    t.index ["user_id"], name: "index_statuses_on_user_id"
-  end
-
-  create_table "tags", force: :cascade do |t|
-    t.string "title"
-    t.integer "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.boolean "confirmed"
-    t.integer "confirmed_by"
-    t.index ["user_id"], name: "index_tags_on_user_id"
-  end
-
-  create_table "tasks", force: :cascade do |t|
-    t.string "title"
-    t.text "details"
-    t.integer "occurrence"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "start"
-    t.datetime "deadline"
-    t.integer "user_id"
-    t.json "participants"
-    t.integer "status_id"
-    t.boolean "public"
-    t.json "tags"
-    t.boolean "archived"
-    t.text "archive_note"
-    t.index ["status_id"], name: "index_tasks_on_status_id"
-    t.index ["user_id"], name: "index_tasks_on_user_id"
-  end
-
-  create_table "time_sheets", force: :cascade do |t|
-    t.integer "user_id"
-    t.text "morning_report"
-    t.text "afternoon_report"
-    t.text "extra_report"
-    t.json "associations"
-    t.json "recipients"
-    t.date "sheet_date"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_time_sheets_on_user_id"
-  end
-
-  create_table "todos", force: :cascade do |t|
-    t.string "title"
-    t.integer "work_id"
-    t.json "participants"
-    t.boolean "is_done"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "user_id"
-    t.index ["user_id"], name: "index_todos_on_user_id"
-    t.index ["work_id"], name: "index_todos_on_work_id"
-  end
-
-  create_table "uploads", force: :cascade do |t|
-    t.string "title"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "uuid"
-    t.index ["uuid"], name: "index_uploads_on_uuid"
   end
 
   create_table "users", force: :cascade do |t|
@@ -261,51 +91,11 @@ ActiveRecord::Schema.define(version: 2020_05_22_134602) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.json "assignments"
-    t.integer "sign_in_count", default: 0, null: false
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
-    t.inet "current_sign_in_ip"
-    t.inet "last_sign_in_ip"
     t.string "last_code"
     t.datetime "last_code_datetime"
     t.datetime "last_login"
-    t.integer "current_role_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  create_table "visits", force: :cascade do |t|
-    t.integer "visitable_id"
-    t.string "visitable_type"
-    t.integer "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "visitable_action"
-    t.json "the_params"
-    t.index ["user_id"], name: "index_visits_on_user_id"
-    t.index ["visitable_action"], name: "index_visits_on_visitable_action"
-    t.index ["visitable_id"], name: "index_visits_on_visitable_id"
-    t.index ["visitable_type"], name: "index_visits_on_visitable_type"
-  end
-
-  create_table "works", force: :cascade do |t|
-    t.string "title"
-    t.string "details"
-    t.integer "user_id"
-    t.integer "task_id"
-    t.datetime "start"
-    t.datetime "deadline"
-    t.integer "status_id"
-    t.json "statuses"
-    t.json "participants"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "priority"
-    t.boolean "archived"
-    t.index ["status_id"], name: "index_works_on_status_id"
-    t.index ["task_id"], name: "index_works_on_task_id"
-    t.index ["user_id"], name: "index_works_on_user_id"
-  end
-
-  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
 end

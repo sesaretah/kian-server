@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  course_module_id: 1
+  sco_id: 1
+  adobe_id: 1
+  start_time: 2020-07-19 17:22:14
+  end_time: 2020-07-19 17:22:14
+  duration: 1
+
+two:
+  course_module_id: 1
+  sco_id: 1
+  adobe_id: 1
+  start_time: 2020-07-19 17:22:14
+  end_time: 2020-07-19 17:22:14
+  duration: 1

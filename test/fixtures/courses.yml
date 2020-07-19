@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  serial: MyString
+  mid: 1
+
+two:
+  title: MyString
+  serial: MyString
+  mid: 1
