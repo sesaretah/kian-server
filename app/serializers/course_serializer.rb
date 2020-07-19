@@ -52,7 +52,7 @@ class CourseSerializer < ActiveModel::Serializer
               sum = meeting.end_time - meeting.start_time
             end
           end
-          result << {utid: principal.uid, sum: sum/60.to_i}
+          result << {utid: principal.uid, sum: (sum/60).round}
         end
       end
     end
