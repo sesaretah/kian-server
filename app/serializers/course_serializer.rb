@@ -48,7 +48,7 @@ class CourseSerializer < ActiveModel::Serializer
             if p_at.end_time.blank?
               sum = p_at.end_time - p_at.start_time
             else 
-              cm = course_modules.where(sco_id: p_at.sco_id).first
+              cm = CourseModule.where(sco_id: p_at.sco_id).first
               sum = cm.end_time - p_at.start_time
             end
           end
