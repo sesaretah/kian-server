@@ -49,7 +49,7 @@ class CourseSerializer < ActiveModel::Serializer
               sum = p_at.end_time - p_at.start_time
             else 
               meeting = Meeting.where(sco_id: p_at.sco_id).first
-              sum = meeting.end_time - p_at.start_time
+              sum = meeting.end_time - meeting.start_time
             end
           end
           result << {utid: principal.uid, sum: sum}
