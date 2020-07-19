@@ -46,10 +46,10 @@ class CourseSerializer < ActiveModel::Serializer
           sum = 0
           for p_at in p_attendances
             if !p_at.end_time.blank?
-              sum = p_at.end_time - p_at.start_time
+              sum = (p_at.end_time - p_at.start_time).to_i
             else 
               meeting = Meeting.where(sco_id: p_at.sco_id).first
-              sum = meeting.end_time - meeting.start_time
+              sum = (meeting.end_time - meeting.start_time).to_i
             end
           end
           result << {utid: principal.uid, sum: (sum/60).round}
