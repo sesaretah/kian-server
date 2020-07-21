@@ -1,7 +1,7 @@
 class CourseSerializer < ActiveModel::Serializer
   include Rails.application.routes.url_helpers
 
-  attributes :id, :title, :avarage, :number_of_meetings, :meetings, :attendances
+  attributes :id, :title, :avarage, :number_of_meetings, :meetings, :attendances, :modules
 
   def id
     object.mid
@@ -59,4 +59,7 @@ class CourseSerializer < ActiveModel::Serializer
     return result
   end
 
+  def modules
+    object.course_modules.where('module_id != ? and module_id != ?', 28,29).group('module_id').count
+  end
 end
