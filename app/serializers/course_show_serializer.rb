@@ -7,7 +7,7 @@ class CourseShowSerializer < ActiveModel::Serializer
   end
 
   def number_of_meetings
-    course_modules =  object.course_modules.where(module_id: 28).first
-    return course_modules.meetings.count if !course_modules.blank?
+    #course_modules =  object.course_modules.where(module_id: 28).first
+    #return course_modules.meetings.count if !course_modules.blank?
   end
 end
