@@ -32,4 +32,29 @@ class MoodleCourse < ActiveRecord::Base
             end
         end
     end
+
+    def self.set_faculty
+        for course in Course.all
+            if !course.serial.blank?  && !course.serial.from(4).blank?
+                course.faculty_id = course.serial.from(4).to(3)
+                course.save
+            end
+        end
+    end
+
+    def self.set_semster
+        for course in Course.all
+            if !course.serial.blank? && !course.serial.from(0).blank?
+                course.semster = course.serial.from(0).to(2)
+                course.save
+            end
+        end
+    end
+
+    def self.import_course_scos 
+        course_scos = MoodleCourse.connection.exec_query("select course, meetingscoid from mdl_adobeconnect_meeting_groups inner join mdl_adobeconnect on mdl_adobeconnect.id = mdl_adobeconnect_meeting_groups.instanceid ")
+        for course_sco in course_scos
+            CourseSco.create(course_id: course_sco['course'], sco_id: course_sco['meetingscoid'])
+        end
+    end
 end

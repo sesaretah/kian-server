@@ -8,25 +8,12 @@ class CourseSerializer < ActiveModel::Serializer
   end 
 
   def avarage
-    total = 0
-    num = 0 
-    avg = 0
-    course_modules =  object.course_modules.where(module_id: 28).first
-    if !course_modules.blank?
-      for meeting in object.course_modules.where(module_id: 28).first.meetings
-        total += meeting.duration.abs
-        num += 1
-     end
-    end
-    if total > 0 && num > 0
-      avg = total/num
-    end
-    return avg
+    object.total_avarage_time[:avarage]
   end
 
   def number_of_meetings
-    course_modules =  object.course_modules.where(module_id: 28).first
-    return course_modules.meetings.count if !course_modules.blank?
+    course_module_ids =  object.course_modules.where(module_id: 28).pluck(:mid)
+    return Meeting.where('course_module_id in (?)', course_module_ids).count 
   end
 
   def meetings
@@ -34,26 +21,24 @@ class CourseSerializer < ActiveModel::Serializer
     return course_modules.meetings.order("start_time ASC") if !course_modules.blank?
   end
 
+
   def attendances
     result = []
-    course_modules =  object.course_modules.where(module_id: 28).first
-    if !course_modules.blank?
-      sco_ids = course_modules.meetings.pluck(:sco_id)
-      attendances = Attendance.where('sco_id in (?)', sco_ids).group_by(&:principal_id)
-      attendances.map do |principal_id, p_attendances|
-        principal = Principal.find_by_principal_id(principal_id)
-        if !principal.blank?
-          sum = 0
-          for p_at in p_attendances
-            if !p_at.end_time.blank?
-              sum = (p_at.end_time - p_at.start_time).to_i
-            else 
-              meeting = Meeting.where(sco_id: p_at.sco_id).first
-              sum = (meeting.end_time - meeting.start_time).to_i
-            end
+    sco_ids = CourseSco.where(course_id: object.mid).pluck(:sco_id)
+    attendances = Attendance.where('sco_id in (?)', sco_ids).group_by(&:principal_id)
+    attendances.map do |principal_id, p_attendances|
+      principal = Principal.find_by_principal_id(principal_id)
+      if !principal.blank?
+        sum = 0
+        for p_at in p_attendances
+          if !p_at.end_time.blank?
+            sum += p_at.end_time.to_i - p_at.start_time.to_i
           end
-          result << {utid: principal.uid, sum: (sum/60).round}
         end
+        sum > 0 ? minutes = (sum/60).to_f : minutes = 0
+        object.total_avarage_time[:total] > 0 ? percent = (minutes / object.total_avarage_time[:total]) * 100 : percent = 0
+        percent = 100 if percent > 100
+        result << {utid: principal.uid, sum: minutes.round, percent: percent.round}
       end
     end
     return result

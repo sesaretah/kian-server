@@ -1,0 +1,2 @@
+class CourseSco < ApplicationRecord
+end
