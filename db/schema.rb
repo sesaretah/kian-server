@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_23_141807) do
+ActiveRecord::Schema.define(version: 2020_07_24_105457) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -47,6 +47,13 @@ ActiveRecord::Schema.define(version: 2020_07_23_141807) do
     t.index ["course_id"], name: "index_course_scos_on_course_id"
   end
 
+  create_table "course_teachers", force: :cascade do |t|
+    t.integer "course_id"
+    t.string "fullname"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "courses", force: :cascade do |t|
     t.string "title"
     t.string "serial"
@@ -72,6 +79,16 @@ ActiveRecord::Schema.define(version: 2020_07_23_141807) do
     t.index ["course_module_id"], name: "index_meetings_on_course_module_id"
     t.index ["mid"], name: "index_meetings_on_mid"
     t.index ["sco_id"], name: "index_meetings_on_sco_id"
+  end
+
+  create_table "moodle_profiles", force: :cascade do |t|
+    t.integer "mid"
+    t.string "fullname"
+    t.string "utid"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["mid"], name: "index_moodle_profiles_on_mid"
+    t.index ["utid"], name: "index_moodle_profiles_on_utid"
   end
 
   create_table "principals", force: :cascade do |t|

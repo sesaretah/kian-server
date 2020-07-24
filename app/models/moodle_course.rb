@@ -57,4 +57,18 @@ class MoodleCourse < ActiveRecord::Base
             CourseSco.create(course_id: course_sco['course'], sco_id: course_sco['meetingscoid'])
         end
     end
+
+    def self.import_course_teachers
+       course_teachers =  MoodleCourse.connection.exec_query("SELECT c.id, u.firstname,u.lastname FROM mdl_course c JOIN mdl_context ct ON c.id = ct.instanceid JOIN mdl_role_assignments ra ON ra.contextid = ct.id JOIN mdl_user u ON u.id = ra.userid JOIN mdl_role r ON r.id = ra.roleid WHERE r.id in  (2,3) ")
+        for course_teacher in course_teachers
+            CourseTeacher.create(course_id: course_teacher['id'], fullname: "#{course_teacher['firstname']} #{course_teacher['lastname']}" )
+        end
+    end
+
+    def self.import_profiles
+        profiles =  MoodleCourse.connection.exec_query("select username, id, firstname, lastname from mdl_user")
+         for profile in profiles
+             MoodleProfile.create(mid: profile['id'], utid: profile["username"] ,fullname: "#{profile['firstname']} #{profile['lastname']}" )
+         end
+     end
 end

@@ -1,7 +1,7 @@
 class CourseSerializer < ActiveModel::Serializer
   include Rails.application.routes.url_helpers
 
-  attributes :id, :title, :avarage, :number_of_meetings, :meetings, :attendances, :modules
+  attributes :id, :title, :avarage, :number_of_meetings, :meetings, :attendances, :modules, :teacher
 
   def id
     object.mid
@@ -9,6 +9,11 @@ class CourseSerializer < ActiveModel::Serializer
 
   def avarage
     object.total_avarage_time[:avarage]
+  end
+
+  def teacher
+    teachers = CourseTeacher.where(course_id: object.mid).pluck(:fullname)
+    teachers.first if !teachers.blank?
   end
 
   def number_of_meetings
@@ -38,7 +43,9 @@ class CourseSerializer < ActiveModel::Serializer
         sum > 0 ? minutes = (sum/60).to_f : minutes = 0
         object.total_avarage_time[:total] > 0 ? percent = (minutes / object.total_avarage_time[:total]) * 100 : percent = 0
         percent = 100 if percent > 100
-        result << {utid: principal.uid, sum: minutes.round, percent: percent.round}
+        mprofile = MoodleProfile.where(utid: principal.uid).first
+        !mprofile.blank? ? fullname = mprofile.fullname : fullname= ''
+        result << {utid: principal.uid, fullname: fullname, sum: minutes.round, percent: percent.round}
       end
     end
     return result
