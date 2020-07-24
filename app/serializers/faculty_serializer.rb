@@ -1,11 +1,18 @@
 class FacultySerializer < ActiveModel::Serializer
   attributes :faculty_courses, :faculty_assets, :id, :total_assets,:most_quiz, 
             :most_resource,  :most_assignment,   :most_online_course_count,
-            :most_online_course_duration, :most_activity
+            :most_online_course_duration, :most_activity, :name
 
 
   def id
     object.first.faculty_id if object.first
+  end
+
+  def name 
+    name = ''
+    faculty = Faculty.find_by_serial(object.first.faculty_id) if object.first
+    name = faculty.fullname if faculty && !faculty.blank?
+    return name
   end
 
   def faculty_courses

@@ -24,7 +24,9 @@ class V1::CoursesController < ApplicationController
   def faculties
     faculties = []
     Course.all.group_by(&:faculty_id).map do |faculty_id, courses|
-      faculties << {id: faculty_id} if !faculty_id.blank?
+      faculty  = Faculty.find_by_serial(faculty_id)
+      !faculty.blank? ? name = faculty.fullname : name = ''
+      faculties << {id: faculty_id, name: name} if !faculty_id.blank?
     end
     render json: { data: faculties.sort_by { |h| h[:id] }.as_json, klass: 'Faculty' }, status: :ok
   end
