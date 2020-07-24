@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  course_id: 1
+  start_time: 2020-07-24 19:54:57
+  end_time: 2020-07-24 19:54:57
+  duration: 1
+
+two:
+  course_id: 1
+  start_time: 2020-07-24 19:54:57
+  end_time: 2020-07-24 19:54:57
+  duration: 1

@@ -45,7 +45,7 @@ class MoodleCourse < ActiveRecord::Base
     def self.set_semster
         for course in Course.all
             if !course.serial.blank? && !course.serial.from(0).blank?
-                course.semster = course.serial.from(0).to(2)
+                course.semster = course.serial.from(0).to(3)
                 course.save
             end
         end
@@ -71,4 +71,24 @@ class MoodleCourse < ActiveRecord::Base
              MoodleProfile.create(mid: profile['id'], utid: profile["username"] ,fullname: "#{profile['firstname']} #{profile['lastname']}" )
          end
      end
+
+    def self.construct_course_meeting
+        for course_module in CourseModule.all
+            meetings = course_module.meetings
+            for meeting in meetings
+                CourseMeeting.create(course_id: course_module.course_id, start_time: meeting.start_time, end_time: meeting.end_time, duration: meeting.duration)
+            end
+        end
+    end
+
+    def self.calculate_meeting_duration
+        for course in Course.all
+            meetings = CourseMeeting.where(course_id: course.mid)
+            sum = 0
+            for meeting in meetings
+                sum += meeting.duration
+            end
+            MeetingDuration.create(course_id: course.mid, duration: sum)
+        end
+    end
 end

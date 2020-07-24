@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_24_105457) do
+ActiveRecord::Schema.define(version: 2020_07_24_160047) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -26,6 +26,16 @@ ActiveRecord::Schema.define(version: 2020_07_24_105457) do
     t.index ["principal_id"], name: "index_attendances_on_principal_id"
     t.index ["sco_id"], name: "index_attendances_on_sco_id"
     t.index ["transcript_id"], name: "index_attendances_on_transcript_id"
+  end
+
+  create_table "course_meetings", force: :cascade do |t|
+    t.integer "course_id"
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.integer "duration"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_course_meetings_on_course_id"
   end
 
   create_table "course_modules", force: :cascade do |t|
@@ -64,6 +74,14 @@ ActiveRecord::Schema.define(version: 2020_07_24_105457) do
     t.integer "group_id"
     t.integer "semster"
     t.index ["mid"], name: "index_courses_on_mid"
+  end
+
+  create_table "meeting_durations", force: :cascade do |t|
+    t.integer "course_id"
+    t.integer "duration"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_meeting_durations_on_course_id"
   end
 
   create_table "meetings", force: :cascade do |t|
