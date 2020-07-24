@@ -1,7 +1,7 @@
 class FacultySerializer < ActiveModel::Serializer
   attributes :faculty_courses, :faculty_assets, :id, :total_assets,:most_quiz, 
             :most_resource,  :most_assignment,   :most_online_course_count,
-            :most_online_course_duration
+            :most_online_course_duration, :most_activity
 
 
   def id
@@ -52,6 +52,18 @@ class FacultySerializer < ActiveModel::Serializer
   def most_assignment
     result = []
     array = CourseModule.where('module_id in (?) and course_id in (?)', [1,2] , object.pluck(:mid)).group('course_id').order("count(course_id) DESC").limit(20).pluck("course_id, count(course_id)")
+    for item in array
+      course = Course.find_by_mid(item[0])
+      if !course.serial.blank?
+        result << {id: course.id, serial: course.serial, count: item[1]}
+      end
+    end
+    return result
+  end
+
+  def most_activity
+    result = []
+    array = CourseModule.where('module_id not in (?) and course_id in (?)', [28,29] , object.pluck(:mid)).group('course_id').order("count(course_id) DESC").limit(20).pluck("course_id, count(course_id)")
     for item in array
       course = Course.find_by_mid(item[0])
       if !course.serial.blank?
