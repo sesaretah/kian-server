@@ -1,5 +1,8 @@
 class MoodleCourse < ActiveRecord::Base
     require 'unicode_fixer'
+    require 'digest/sha1'
+    require 'active_support/core_ext/hash'
+
     self.abstract_class = true
     establish_connection :external_moodle
 
@@ -13,23 +16,41 @@ class MoodleCourse < ActiveRecord::Base
         end
     end
 
-    def self.import_course_modules 
+
+
+    def self.import_course_modules(semster)
         moodle_course_modules  = MoodleCourse.connection.exec_query("select * from mdl_course_modules")
         for moodle_course_module in moodle_course_modules
-            course_module = CourseModule.where(mid: moodle_course_module["id"]).first
+            course_module = CourseModule.where(mid: moodle_course_module["id"], semster: semster).first
             if course_module.blank?
-                CourseModule.create(mid: moodle_course_module["id"],module_id: moodle_course_module["module"], course_id: moodle_course_module["course"])
+                CourseModule.create(mid: moodle_course_module["id"],module_id: moodle_course_module["module"], course_id: moodle_course_module["course"], semster: semster)
             end
         end
     end
 
-    def self.import_meeting 
-        moodle_meetings  = MoodleCourse.connection.exec_query("select * from mdl_adobeconnect_recording_cache")
+    def self.add_semster_to_course_modules(semster)
+        for course_module in CourseModule.all
+            course_module.semster = semster
+            course_module.save
+        end
+    end
+
+    def self.import_meeting(i)
+        last = Meeting.where(module_index: i).order('id asc').last
+        last.blank? ? last_id = 0 : last_id = last.id
+        i == 1 ? index = '': index = i.to_s
+        moodle_meetings  = MoodleCourse.connection.exec_query("select * from mdl_adobeconnect#{index}_recording_cache where id > #{last_id}")
         for moodle_meeting in moodle_meetings
-            meeting = Meeting.where(mid: moodle_meeting["id"]).first
-            if meeting.blank? && moodle_meeting["starttime"].to_i > 138000000
-                Meeting.create(mid: moodle_meeting["id"],course_module_id: moodle_meeting["cmid"], sco_id: moodle_meeting["scoid"], adobe_id: moodle_meeting["adobeconnectid"], start_time: DateTime.strptime(moodle_meeting["starttime"].to_s,'%s'), end_time: DateTime.strptime(moodle_meeting["endtime"].to_s,'%s'), duration: (moodle_meeting["endtime"].to_i - moodle_meeting["starttime"].to_i)/60 )
+            course_module = CourseModule.find_by_mid(moodle_meeting["cmid"])
+            if !course_module.blank?
+                Meeting.create(mid: moodle_meeting["id"], module_index: i, course_module_id: course_module.id, sco_id: moodle_meeting["scoid"], adobe_id: moodle_meeting["adobeconnectid"], start_time: DateTime.strptime(moodle_meeting["starttime"].to_s,'%s'), end_time: DateTime.strptime(moodle_meeting["endtime"].to_s,'%s'), duration: (moodle_meeting["endtime"].to_i - moodle_meeting["starttime"].to_i)/60 )
             end
+        end
+    end
+
+    def self.import_meetings
+        for i in 1..5
+            self.import_meeting(i)
         end
     end
 
@@ -51,7 +72,7 @@ class MoodleCourse < ActiveRecord::Base
         end
     end
 
-    def self.import_course_scos 
+    def self.import_course_scos(i)
         course_scos = MoodleCourse.connection.exec_query("select course, meetingscoid from mdl_adobeconnect_meeting_groups inner join mdl_adobeconnect on mdl_adobeconnect.id = mdl_adobeconnect_meeting_groups.instanceid ")
         for course_sco in course_scos
             CourseSco.create(course_id: course_sco['course'], sco_id: course_sco['meetingscoid'])
@@ -61,14 +82,17 @@ class MoodleCourse < ActiveRecord::Base
     def self.import_course_teachers
        course_teachers =  MoodleCourse.connection.exec_query("SELECT c.id, u.firstname,u.lastname FROM mdl_course c JOIN mdl_context ct ON c.id = ct.instanceid JOIN mdl_role_assignments ra ON ra.contextid = ct.id JOIN mdl_user u ON u.id = ra.userid JOIN mdl_role r ON r.id = ra.roleid WHERE r.id in  (2,3) ")
         for course_teacher in course_teachers
-            CourseTeacher.create(course_id: course_teacher['id'], fullname: "#{course_teacher['firstname']} #{course_teacher['lastname']}" )
+            CourseTeacher.create(course_id: course_teacher['id'], fullname: "#{UnicodeFixer.fix(course_teacher['firstname'])} #{UnicodeFixer.fix(course_teacher['lastname'])}" )
         end
     end
 
     def self.import_profiles
         profiles =  MoodleCourse.connection.exec_query("select username, id, firstname, lastname from mdl_user")
          for profile in profiles
-             MoodleProfile.create(mid: profile['id'], utid: profile["username"] ,fullname: "#{profile['firstname']} #{profile['lastname']}" )
+            prf = MoodleProfile.where(utid: profile["username"]).first
+            if prf.blank?
+                MoodleProfile.create(mid: profile['id'], utid: profile["username"] ,fullname: "#{UnicodeFixer.fix(profile['firstname'])} #{UnicodeFixer.fix(profile['lastname'])}" )
+            end
          end
      end
 
@@ -76,7 +100,10 @@ class MoodleCourse < ActiveRecord::Base
         for course_module in CourseModule.all
             meetings = course_module.meetings
             for meeting in meetings
-                CourseMeeting.create(course_id: course_module.course_id, start_time: meeting.start_time, end_time: meeting.end_time, duration: meeting.duration)
+                cmeeting = CourseMeeting.where(course_id: course_module.course_id, sco_id: meeting.sco_id).first
+                if cmeeting.blank?
+                    CourseMeeting.create(course_id: course_module.course_id, sco_id: meeting.sco_id,start_time: meeting.start_time, end_time: meeting.end_time, duration: meeting.duration)
+                end
             end
         end
     end
@@ -90,5 +117,86 @@ class MoodleCourse < ActiveRecord::Base
             end
             MeetingDuration.create(course_id: course.mid, duration: sum)
         end
+    end
+
+
+    def self.calculate_bb_meeting_duration
+        for course in Course.all
+            meetings = BbMeeting.where(course_id: course.mid)
+            sum = 0
+            for meeting in meetings
+                sum += meeting.duration
+            end
+            BbMeetingDuration.create(course_id: course.mid, duration: sum)
+        end
+    end
+
+    def self.import_bigbluebtn
+        big_blues  = MoodleCourse.connection.exec_query("select * from mdl_bigbluebuttonbn_logs where meta = '{\"record\":true}'")
+        for big_blue in big_blues
+            bb = BigBlue.where(mid: big_blue["id"]).first
+            if bb.blank?
+                BigBlue.create(mid: big_blue["id"], module_id: big_blue["bigbluebuttonbnid"], course_id: big_blue["courseid"], meeting_id: big_blue["meetingid"], user_id: big_blue["userid"])
+            end
+        end
+    end
+
+    def self.import_bb_recordings
+        for bb in BigBlue.connection.exec_query("SELECT distinct on (meeting_id) * FROM public.big_blues")
+            cheksum_string = 'getRecordingsmeetingID=' + bb['meeting_id']+ 'f4c70b0793683eaf0cc8e4bc49147420f734cbc546c63b26ff5cc0412764ec49'
+            cheksum = Digest::SHA1.hexdigest cheksum_string
+            response = HTTParty.get('http://webinar3.ut.ac.ir/bigbluebutton/api/getRecordings?meetingID='+bb['meeting_id']+'&checksum=' + cheksum)
+            body = Hash.from_xml(response.body)
+            if body['response']['recordings'] != "\n  "
+                for r in body['response']['recordings']
+                    if r[1].kind_of?(Array)
+                        for rec in r[1]
+                            duration = rec['playback']['format']['length']
+                            record_id = rec['recordID']
+                            start_time = DateTime.strptime((rec['startTime'].to_i/1000).to_i.to_s,'%s')
+                            number_of_participants = rec['participants'].to_i
+                            bbm = BbMeeting.where(record_id: record_id).first
+                            if bbm.blank?
+                                BbMeeting.create(course_id: bb['course_id'], duration: duration, record_id: record_id, start_time: start_time, number_of_participants: number_of_participants)
+                            end
+                        end
+                    else
+                        duration = r[1]['playback']['format']['length']
+                        record_id = r[1]['recordID']
+                        start_time = DateTime.strptime((r[1]['startTime'].to_i/1000).to_i.to_s,'%s')
+                        number_of_participants = r[1]['participants'].to_i
+                        bbm = BbMeeting.where(record_id: record_id).first
+                        if bbm.blank?
+                            BbMeeting.create(course_id: bb['course_id'], duration: duration, record_id: record_id, start_time: start_time, number_of_participants: number_of_participants)
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    def self.meeting_info 
+        #big_blues  = MoodleCourse.connection.exec_query("select distinct on (meetingid) * from mdl_bigbluebuttonbn")
+        #for bb in big_blues
+           # p bb['meetingid']
+            cheksum_string = 'getMeetings'+'f4c70b0793683eaf0cc8e4bc49147420f734cbc546c63b26ff5cc0412764ec49'
+            cheksum = Digest::SHA1.hexdigest cheksum_string
+            link = 'http://webinar3.ut.ac.ir/bigbluebutton/api/getMeetings?checksum=' + cheksum
+            #response = HTTParty.get('http://webinar3.ut.ac.ir/bigbluebutton/api/getMeetings?checksum=' + cheksum)
+            #body = Hash.from_xml(response.body)
+            p link
+        #end
+    end
+
+    def self.prepare_semster(semster)
+        self.import_course
+        self.set_faculty
+        self.set_semster
+        self.import_course_modules(semster)
+        self.import_meetings
+        self.import_profiles
+        self.import_course_teachers
+        self.construct_course_meeting
+        self.calculate_meeting_duration
     end
 end

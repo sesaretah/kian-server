@@ -2,13 +2,13 @@ class V1::CoursesController < ApplicationController
 
 
   def index
-    courses = Course.where('serial like ?', '%398%').paginate(page: 1, per_page: 30)
+    courses = Course.where('serial like ?', '%399%').paginate(page: 1, per_page: 30)
     render json: { data: ActiveModel::SerializableResource.new(courses,  each_serializer: CourseShowSerializer ).as_json, klass: 'Course' }, status: :ok
   end
 
   def search
     if !params[:q].blank?
-      courses = Course.search params[:q], star: true, with: {semster: 3982}
+      courses = Course.search params[:q], star: true, with: {semster: 3991}
       render json: { data: ActiveModel::SerializableResource.new(courses,  each_serializer: CourseShowSerializer ).as_json, klass: 'Course' }, status: :ok
     else 
       render json: { data: [], klass: 'Course' }, status: :ok
@@ -16,7 +16,7 @@ class V1::CoursesController < ApplicationController
   end
 
   def faculty
-    courses = Course.where(faculty_id: params[:faculty_id], semster: 3982)
+    courses = Course.where(faculty_id: params[:faculty_id], semster: 3991)
     render json: { data: FacultySerializer.new(courses).as_json,  klass: 'Faculty' }, status: :ok
   end
 

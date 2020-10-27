@@ -1,7 +1,9 @@
 class CourseSerializer < ActiveModel::Serializer
   include Rails.application.routes.url_helpers
 
-  attributes :id, :title, :avarage, :number_of_meetings, :meetings, :attendances, :modules, :teacher
+  attributes :id, :title, :serial,:avarage, :number_of_meetings, 
+             :meetings, :attendances, :modules, :teacher,
+             :bb_meetings, :number_of_bb_meetings, :bb_avarage
 
   def id
     object.mid
@@ -17,13 +19,37 @@ class CourseSerializer < ActiveModel::Serializer
   end
 
   def number_of_meetings
-    course_module_ids =  object.course_modules.where(module_id: 28).pluck(:mid)
-    return Meeting.where('course_module_id in (?)', course_module_ids).count 
+    modules = [28, 36, 37, 38, 39]
+    sco_ids = []
+    course_module_ids =  object.course_modules.where('module_id in (?)', modules).pluck(:mid)
+    sco_ids = Meeting.where('course_module_id in (?)', course_module_ids).pluck(:sco_id).uniq if !course_module_ids.blank?
+    return sco_ids.length 
   end
 
   def meetings
-    course_modules =  object.course_modules.where(module_id: 28).first
-    return course_modules.meetings.order("start_time ASC") if !course_modules.blank?
+    modules = [28, 36, 37, 38, 39]
+    meeting = []
+    #course_modules =  object.course_modules.where('module_id in (?)', modules).first
+    course_module_ids =  object.course_modules.where('module_id in (?)', modules).pluck(:mid)
+    sco_ids = Meeting.where('course_module_id in (?)', course_module_ids).pluck(:sco_id).uniq if !course_module_ids.blank?
+    if !sco_ids.blank?
+      for sco_id in sco_ids
+        meeting << Meeting.where('sco_id = ?', sco_id).first
+      end
+    end
+    return meeting
+  end
+
+  def bb_meetings
+    BbMeeting.where(course_id: object.id)
+  end
+
+  def number_of_bb_meetings
+    BbMeeting.where(course_id: object.id).count
+  end
+
+  def bb_avarage
+    BbMeeting.total_avarage_time(object)[:avarage]
   end
 
 

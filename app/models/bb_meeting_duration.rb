@@ -1,0 +1,2 @@
+class BbMeetingDuration < ApplicationRecord
+end

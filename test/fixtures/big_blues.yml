@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  mid: 1
+  module_id: 1
+  course_id: 1
+  user_id: 1
+  meeting_id: MyString
+
+two:
+  mid: 1
+  module_id: 1
+  course_id: 1
+  user_id: 1
+  meeting_id: MyString

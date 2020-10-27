@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_24_183604) do
+ActiveRecord::Schema.define(version: 2020_10_27_101337) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,6 +28,37 @@ ActiveRecord::Schema.define(version: 2020_07_24_183604) do
     t.index ["transcript_id"], name: "index_attendances_on_transcript_id"
   end
 
+  create_table "bb_meeting_durations", force: :cascade do |t|
+    t.integer "course_id"
+    t.integer "duration"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_bb_meeting_durations_on_course_id"
+  end
+
+  create_table "bb_meetings", force: :cascade do |t|
+    t.string "record_id"
+    t.integer "course_id"
+    t.integer "duration"
+    t.integer "number_of_participants"
+    t.datetime "start_time"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_bb_meetings_on_course_id"
+    t.index ["record_id"], name: "index_bb_meetings_on_record_id"
+  end
+
+  create_table "big_blues", force: :cascade do |t|
+    t.integer "mid"
+    t.integer "module_id"
+    t.integer "course_id"
+    t.integer "user_id"
+    t.string "meeting_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["mid"], name: "index_big_blues_on_mid"
+  end
+
   create_table "course_meetings", force: :cascade do |t|
     t.integer "course_id"
     t.datetime "start_time"
@@ -35,7 +66,9 @@ ActiveRecord::Schema.define(version: 2020_07_24_183604) do
     t.integer "duration"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "sco_id"
     t.index ["course_id"], name: "index_course_meetings_on_course_id"
+    t.index ["sco_id"], name: "index_course_meetings_on_sco_id"
   end
 
   create_table "course_modules", force: :cascade do |t|
@@ -44,6 +77,7 @@ ActiveRecord::Schema.define(version: 2020_07_24_183604) do
     t.integer "mid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "semster"
     t.index ["course_id"], name: "index_course_modules_on_course_id"
     t.index ["mid"], name: "index_course_modules_on_mid"
     t.index ["module_id"], name: "index_course_modules_on_module_id"
@@ -79,8 +113,8 @@ ActiveRecord::Schema.define(version: 2020_07_24_183604) do
   create_table "faculties", force: :cascade do |t|
     t.integer "serial"
     t.string "fullname"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.index ["serial"], name: "index_faculties_on_serial"
   end
 
@@ -102,6 +136,7 @@ ActiveRecord::Schema.define(version: 2020_07_24_183604) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "mid"
+    t.integer "module_index"
     t.index ["course_module_id"], name: "index_meetings_on_course_module_id"
     t.index ["mid"], name: "index_meetings_on_mid"
     t.index ["sco_id"], name: "index_meetings_on_sco_id"
@@ -134,6 +169,8 @@ ActiveRecord::Schema.define(version: 2020_07_24_183604) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id"
+    t.string "utid"
+    t.index ["utid"], name: "index_profiles_on_utid"
   end
 
   create_table "roles", force: :cascade do |t|
