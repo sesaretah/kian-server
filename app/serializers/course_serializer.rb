@@ -1,7 +1,7 @@
 class CourseSerializer < ActiveModel::Serializer
   include Rails.application.routes.url_helpers
 
-  attributes :id, :title, :serial,:avarage, :number_of_meetings, 
+  attributes :id, :mid,:title, :serial,:avarage, :number_of_meetings, 
              :meetings, :attendances, :modules, :teacher,
              :bb_meetings, :number_of_bb_meetings, :bb_avarage
 
