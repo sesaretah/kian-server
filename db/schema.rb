@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_27_101337) do
+ActiveRecord::Schema.define(version: 2020_10_28_080938) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -115,6 +115,8 @@ ActiveRecord::Schema.define(version: 2020_10_27_101337) do
     t.string "fullname"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer "section"
+    t.index ["section"], name: "index_faculties_on_section"
     t.index ["serial"], name: "index_faculties_on_serial"
   end
 
@@ -180,6 +182,14 @@ ActiveRecord::Schema.define(version: 2020_10_27_101337) do
     t.datetime "updated_at", null: false
     t.integer "user_id"
     t.boolean "default_role"
+  end
+
+  create_table "sections", force: :cascade do |t|
+    t.string "title"
+    t.integer "mid"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["mid"], name: "index_sections_on_mid"
   end
 
   create_table "users", force: :cascade do |t|

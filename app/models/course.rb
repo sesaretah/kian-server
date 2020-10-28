@@ -20,4 +20,8 @@ class Course < ApplicationRecord
         return {total: total, avarage: avarage}
     end
 
+    def faculty
+      Faculty.where(serial: self.faculty_id).first
+    end
+
 end

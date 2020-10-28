@@ -27,8 +27,10 @@ Rails.application.routes.draw do
     get '/courses/search', to: 'courses#search'
 
     get '/courses/faculties', to: 'courses#faculties'
-    get '/courses/faculties/:faculty_id', to: 'courses#faculty'
 
+    get '/courses/faculties/:faculty_id', to: 'courses#faculty'
+    get '/courses/sections', to: 'courses#sections'
+    get '/courses/sections/:section_id', to: 'courses#section'
     
 
     

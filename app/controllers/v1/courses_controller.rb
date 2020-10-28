@@ -8,7 +8,7 @@ class V1::CoursesController < ApplicationController
 
   def search
     if !params[:q].blank?
-      courses = Course.search params[:q], star: true, with: {semster: 3991}
+      courses = Course.search params[:q], star: true
       render json: { data: ActiveModel::SerializableResource.new(courses,  each_serializer: CourseShowSerializer ).as_json, klass: 'Course' }, status: :ok
     else 
       render json: { data: [], klass: 'Course' }, status: :ok
@@ -31,8 +31,22 @@ class V1::CoursesController < ApplicationController
     render json: { data: faculties.sort_by { |h| h[:id] }.as_json, klass: 'Faculty' }, status: :ok
   end
 
+  def section
+    section = Section.find(params[:section_id])
+    courses = Course.where('serial like ?', "3991#{section.mid}%")
+    render json: { data: SectionSerializer.new(courses).as_json,  klass: 'Section' }, status: :ok
+  end
+
+  def sections
+    sections = Section.all
+    render json: { data: sections.sort_by { |h| h[:title] }.as_json, klass: 'Section' }, status: :ok
+  end
+
   def show
     @course = Course.find_by_mid(params[:id])
+    if @course.blank?
+      @course = Course.find_by_serial(params[:id])
+    end
     render json: { data: CourseSerializer.new(@course).as_json,  klass: 'Course' }, status: :ok
   end
 
