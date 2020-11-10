@@ -189,6 +189,17 @@ class MoodleCourse < ActiveRecord::Base
     end
 
     def self.prepare_semster(semster)
+        CourseTeacher.destry_all
+        MoodleProfile.destry_all
+        CourseModule.destry_all
+        CourseSco.destry_all
+        Course.destry_all
+        CourseMeeting.destry_all
+        Meeting.destry_all
+        BigBlue.destry_all
+        BbMeetingDuration.destry_all
+        BbMeeting.destry_all
+        
         self.import_course
         self.set_faculty
         self.set_semster
