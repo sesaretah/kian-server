@@ -187,6 +187,7 @@ class MoodleCourse < ActiveRecord::Base
             p link
         #end
     end
+    
 
     def self.prepare_semster(semster)
         CourseTeacher.destroy_all
