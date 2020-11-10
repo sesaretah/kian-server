@@ -193,10 +193,15 @@ class MoodleCourse < ActiveRecord::Base
         self.set_faculty
         self.set_semster
         self.import_course_modules(semster)
+        self.add_semster_to_course_modules(semster)
         self.import_meetings
         self.import_profiles
         self.import_course_teachers
         self.construct_course_meeting
         self.calculate_meeting_duration
+
+        self.import_bigbluebtn
+        self.import_bb_recordings
+        self.calculate_bb_meeting_duration
     end
 end
