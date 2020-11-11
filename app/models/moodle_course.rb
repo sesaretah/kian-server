@@ -202,16 +202,20 @@ class MoodleCourse < ActiveRecord::Base
 
     def self.prepare_semster(semster)
         p 'Prepare Started'
-        CourseTeacher.destroy_all
-        MoodleProfile.destroy_all
+
+        MoodleCourse.connection.exec_query("TRUNCATE course_teachers, moodle_profiles, course_meetings, bb_meeting_durations, bb_meetings  RESTART IDENTITY")
+
+
+        #CourseTeacher.destroy_all
+        #MoodleProfile.destroy_all
         #CourseModule.destroy_all
         #CourseSco.destroy_all
         #Course.destroy_all
-        CourseMeeting.destroy_all
+        #CourseMeeting.destroy_all
         #Meeting.destroy_all
         #BigBlue.destroy_all
-        BbMeetingDuration.destroy_all
-        BbMeeting.destroy_all
+        #BbMeetingDuration.destroy_all
+        #BbMeeting.destroy_all
 
         p 'Importing Courses'
         self.import_course
@@ -230,7 +234,9 @@ class MoodleCourse < ActiveRecord::Base
         self.construct_course_meeting
         self.calculate_meeting_duration
 
+        p 'Importing Big Blues'
         self.import_bigbluebtn
+        p 'Importing Big Blue Recordings'
         self.import_bb_recordings
         self.calculate_bb_meeting_duration
     end
