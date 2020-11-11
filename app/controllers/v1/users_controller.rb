@@ -25,12 +25,12 @@ class V1::UsersController < ApplicationController
   end
 
   def sign_up
-    password = SecureRandom.hex(6)
-    @user = User.create(email: params['email'], password: password, password_confirmation: password, last_login: DateTime.now)
-    if @user
-      Profile.create(name: params['name'], surename: params['surename'], user_id: @user.id)
-      @user.notify_user
+    if params['domains'].is_a? Integer
+      domains = [params['domains'].to_i]
+    else 
+      domains = params['domains'].split(',')
     end
+    @user = User.create(email: params['email'], password: params['password'], password_confirmation: params['password'], last_login: DateTime.now, domains: domains)
     render :json => {data: {result: 'OK'}, klass: 'SignUp'}.to_json , :callback => params['callback']
   end
 
