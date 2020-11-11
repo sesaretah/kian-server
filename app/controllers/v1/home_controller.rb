@@ -7,6 +7,10 @@ class V1::HomeController < ApplicationController
     render json: { data: HomeSerializer.new(Meeting.first).as_json, klass: 'Home' }, status: :ok
   end
 
+  def import
+    ImportJob.perform_later(3991)
+  end
+
 
 
 end

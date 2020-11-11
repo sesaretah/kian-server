@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   api_version(:module => "V1", :path => {:value => "v1"}) do
 
     get '/home',  to: 'home#index'
+    get '/import',  to: 'home#import'
     get '/profiles/search', to: 'profiles#search'
     put '/profiles', to: 'profiles#update'
     get '/profiles/my', to: 'profiles#my'

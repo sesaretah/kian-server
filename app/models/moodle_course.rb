@@ -10,7 +10,7 @@ class MoodleCourse < ActiveRecord::Base
         last_mid = 0 
         last_course = Course.all.order('mid desc').first
         last_mid = last_course.mid  if !last_course.blank?
-        moodle_courses = MoodleCourse.connection.exec_query("select * from mdl_course where mid > #{last_mid}")
+        moodle_courses = MoodleCourse.connection.exec_query("select * from mdl_course where id > #{last_mid}")
         for moodle_course in moodle_courses
             course = Course.where(mid: moodle_course["id"]).first
             if course.blank?
@@ -25,7 +25,7 @@ class MoodleCourse < ActiveRecord::Base
         last_mid = 0 
         last_course_modue = CourseModule.all.order('mid desc').first
         last_mid = last_course_modue.mid  if !last_course_modue.blank?
-        moodle_course_modules  = MoodleCourse.connection.exec_query("select * from mdl_course_modules where mid > #{last_mid}")
+        moodle_course_modules  = MoodleCourse.connection.exec_query("select * from mdl_course_modules where id > #{last_mid}")
         for moodle_course_module in moodle_course_modules
             course_module = CourseModule.where(mid: moodle_course_module["id"], semster: semster).first
             if course_module.blank?
@@ -141,7 +141,7 @@ class MoodleCourse < ActiveRecord::Base
         last_mid = 0 
         last_bigbluebtn = BigBlue.all.order('mid desc').first
         last_mid = last_bigbluebtn.mid  if !last_bigbluebtn.blank?
-        big_blues  = MoodleCourse.connection.exec_query("select * from mdl_bigbluebuttonbn_logs where meta = '{\"record\":true}' and mid > #{last_mid}")
+        big_blues  = MoodleCourse.connection.exec_query("select * from mdl_bigbluebuttonbn_logs where meta = '{\"record\":true}' and id > #{last_mid}")
         for big_blue in big_blues
             bb = BigBlue.where(mid: big_blue["id"]).first
             if bb.blank?
@@ -210,14 +210,20 @@ class MoodleCourse < ActiveRecord::Base
         BbMeetingDuration.destroy_all
         BbMeeting.destroy_all
 
+        p 'Importing Courses'
         self.import_course
         self.set_faculty
         self.set_semster
+        p 'Importing Course Modules'
         self.import_course_modules(semster)
         self.add_semster_to_course_modules(semster)
+
+        p 'Importing Course Meetings'
         self.import_meetings
         self.import_profiles
         self.import_course_teachers
+
+        p 'Constructing Course Meetings'
         self.construct_course_meeting
         self.calculate_meeting_duration
 
