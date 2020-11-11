@@ -7,7 +7,10 @@ class MoodleCourse < ActiveRecord::Base
     establish_connection :external_moodle
 
     def self.import_course
-        moodle_courses = MoodleCourse.connection.exec_query("select * from mdl_course")
+        last_mid = 0 
+        last_course = Course.all.order('mid desc').first
+        last_mid = last_course.mid  if !last_course.blank?
+        moodle_courses = MoodleCourse.connection.exec_query("select * from mdl_course where mid > #{last_mid}")
         for moodle_course in moodle_courses
             course = Course.where(mid: moodle_course["id"]).first
             if course.blank?
@@ -19,7 +22,10 @@ class MoodleCourse < ActiveRecord::Base
 
 
     def self.import_course_modules(semster)
-        moodle_course_modules  = MoodleCourse.connection.exec_query("select * from mdl_course_modules")
+        last_mid = 0 
+        last_course_modue = CourseModule.all.order('mid desc').first
+        last_mid = last_course_modue.mid  if !last_course_modue.blank?
+        moodle_course_modules  = MoodleCourse.connection.exec_query("select * from mdl_course_modules where mid > #{last_mid}")
         for moodle_course_module in moodle_course_modules
             course_module = CourseModule.where(mid: moodle_course_module["id"], semster: semster).first
             if course_module.blank?
@@ -29,7 +35,7 @@ class MoodleCourse < ActiveRecord::Base
     end
 
     def self.add_semster_to_course_modules(semster)
-        for course_module in CourseModule.all
+        for course_module in CourseModule.where('semster is null')
             course_module.semster = semster
             course_module.save
         end
@@ -55,7 +61,7 @@ class MoodleCourse < ActiveRecord::Base
     end
 
     def self.set_faculty
-        for course in Course.all
+        for course in Course.where('faculty_id is null')
             if !course.serial.blank?  && !course.serial.from(4).blank?
                 course.faculty_id = course.serial.from(4).to(3)
                 course.save
@@ -64,7 +70,7 @@ class MoodleCourse < ActiveRecord::Base
     end
 
     def self.set_semster
-        for course in Course.all
+        for course in Course.where('semster is null')
             if !course.serial.blank? && !course.serial.from(0).blank?
                 course.semster = course.serial.from(0).to(3)
                 course.save
@@ -132,7 +138,10 @@ class MoodleCourse < ActiveRecord::Base
     end
 
     def self.import_bigbluebtn
-        big_blues  = MoodleCourse.connection.exec_query("select * from mdl_bigbluebuttonbn_logs where meta = '{\"record\":true}'")
+        last_mid = 0 
+        last_bigbluebtn = BigBlue.all.order('mid desc').first
+        last_mid = last_bigbluebtn.mid  if !last_bigbluebtn.blank?
+        big_blues  = MoodleCourse.connection.exec_query("select * from mdl_bigbluebuttonbn_logs where meta = '{\"record\":true}' and mid > #{last_mid}")
         for big_blue in big_blues
             bb = BigBlue.where(mid: big_blue["id"]).first
             if bb.blank?
@@ -187,17 +196,17 @@ class MoodleCourse < ActiveRecord::Base
             p link
         #end
     end
-    
+
 
     def self.prepare_semster(semster)
         CourseTeacher.destroy_all
         MoodleProfile.destroy_all
-        CourseModule.destroy_all
-        CourseSco.destroy_all
-        Course.destroy_all
+        #CourseModule.destroy_all
+        #CourseSco.destroy_all
+        #Course.destroy_all
         CourseMeeting.destroy_all
-        Meeting.destroy_all
-        BigBlue.destroy_all
+        #Meeting.destroy_all
+        #BigBlue.destroy_all
         BbMeetingDuration.destroy_all
         BbMeeting.destroy_all
 
