@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 
     get '/home',  to: 'home#index'
     get '/import',  to: 'home#import'
+    
     get '/profiles/search', to: 'profiles#search'
     put '/profiles', to: 'profiles#update'
     get '/profiles/my', to: 'profiles#my'

@@ -199,6 +199,7 @@ class MoodleCourse < ActiveRecord::Base
 
 
     def self.prepare_semster(semster)
+        p 'Prepare Started'
         CourseTeacher.destroy_all
         MoodleProfile.destroy_all
         #CourseModule.destroy_all
