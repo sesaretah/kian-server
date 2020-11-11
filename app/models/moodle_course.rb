@@ -154,7 +154,9 @@ class MoodleCourse < ActiveRecord::Base
         for bb in BigBlue.connection.exec_query("SELECT distinct on (meeting_id) * FROM public.big_blues")
             cheksum_string = 'getRecordingsmeetingID=' + bb['meeting_id']+ 'f4c70b0793683eaf0cc8e4bc49147420f734cbc546c63b26ff5cc0412764ec49'
             cheksum = Digest::SHA1.hexdigest cheksum_string
-            response = HTTParty.get('http://webinar3.ut.ac.ir/bigbluebutton/api/getRecordings?meetingID='+bb['meeting_id']+'&checksum=' + cheksum)
+            url = 'http://webinar3.ut.ac.ir/bigbluebutton/api/getRecordings?meetingID='+bb['meeting_id']+'&checksum=' + cheksum
+            p url
+            response = HTTParty.get(url)
             body = Hash.from_xml(response.body)
             if body['response']['recordings'] != "\n  "
                 for r in body['response']['recordings']
