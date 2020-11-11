@@ -203,7 +203,7 @@ class MoodleCourse < ActiveRecord::Base
     def self.prepare_semster(semster)
         p 'Prepare Started'
 
-        MoodleCourse.connection.exec_query("TRUNCATE course_teachers, moodle_profiles, course_meetings, bb_meeting_durations, bb_meetings  RESTART IDENTITY")
+        ApplicationRecord.connection.exec_query("TRUNCATE course_teachers, moodle_profiles, course_meetings, bb_meeting_durations, bb_meetings  RESTART IDENTITY")
 
 
         #CourseTeacher.destroy_all
