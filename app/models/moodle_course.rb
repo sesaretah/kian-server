@@ -43,7 +43,7 @@ class MoodleCourse < ActiveRecord::Base
 
     def self.import_meeting(i)
         last = Meeting.where(module_index: i).order('id asc').last
-        last.blank? ? last_id = 0 : last_id = last.id
+        last.blank? ? last_id = 0 : last_id = last.mid
         i == 1 ? index = '': index = i.to_s
         moodle_meetings  = MoodleCourse.connection.exec_query("select * from mdl_adobeconnect#{index}_recording_cache where id > #{last_id}")
         for moodle_meeting in moodle_meetings
