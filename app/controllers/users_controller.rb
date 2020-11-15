@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
 
     def service
-        response = open('https://auth.ut.ac.ir:8443/cas/serviceValidate?service=https%3A%2F%2Ftavan.ut.ac.ir%2Fusers%2Fservice&ticket='+params[:ticket]).read
+        response = open('https://auth.ut.ac.ir:8443/cas/serviceValidate?service=https%3A%2F%2Fkian.ut.ac.ir%2Fusers%2Fservice&ticket='+params[:ticket]).read
         result = Hash.from_xml(response.gsub("\n", ""))
         Rails.logger.info result
         if !result['serviceResponse']['authenticationSuccess'].blank?
@@ -12,9 +12,9 @@ class UsersController < ApplicationController
                 user = User.create(email: utid+ '@ut.ac.ir', password: password, password_confirmation: password, last_login: DateTime.now)     
                 Profile.create(name: utid, user_id: user.id)       
             end
-            redirect_to('https://tavan.ut.ac.ir/app.html#!/login_jwt/'+JWTWrapper.encode({ user_id: user.id }))
+            redirect_to('https://kian.ut.ac.ir/login_jwt/'+JWTWrapper.encode({ user_id: user.id }))
         else
-            redirect_to('https://tavan.ut.ac.ir/app.html#!/login_error/')
+            redirect_to('https://kian.ut.ac.ir/app.html#!/login_error/')
         end
       end
     

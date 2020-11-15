@@ -103,7 +103,8 @@ class MoodleCourse < ActiveRecord::Base
      end
 
     def self.construct_course_meeting
-        for course_module in CourseModule.all
+        modules = [28,36,37,38,39]
+        for course_module in CourseModule.where('module_id in (?)', modules)
             meetings = course_module.meetings
             for meeting in meetings
                 cmeeting = CourseMeeting.where(course_id: course_module.course_id, sco_id: meeting.sco_id).first
