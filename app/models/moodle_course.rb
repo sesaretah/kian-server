@@ -48,6 +48,7 @@ class MoodleCourse < ActiveRecord::Base
         moodle_meetings  = MoodleCourse.connection.exec_query("select * from mdl_adobeconnect#{index}_recording_cache where id > #{last_id}")
         for moodle_meeting in moodle_meetings
             p moodle_meeting["id"]
+            p i
             course_module = CourseModule.find_by_mid(moodle_meeting["cmid"])
             meeting = Meeting.where(mid: moodle_meeting["id"],module_index: i ).first
             if meeting.blank? && !course_module.blank?
