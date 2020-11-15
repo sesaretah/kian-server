@@ -47,10 +47,11 @@ class MoodleCourse < ActiveRecord::Base
         i == 1 ? index = '': index = i.to_s
         moodle_meetings  = MoodleCourse.connection.exec_query("select * from mdl_adobeconnect#{index}_recording_cache where id > #{last_id}")
         for moodle_meeting in moodle_meetings
+            p moodle_meeting["id"]
             course_module = CourseModule.find_by_mid(moodle_meeting["cmid"])
             meeting = Meeting.where(mid: moodle_meeting["id"],module_index: i ).first
             if meeting.blank? && !course_module.blank?
-                p moodle_meeting["id"]
+                p 'create meeting'
                 Meeting.create(mid: moodle_meeting["id"], module_index: i, course_module_id: course_module.id, sco_id: moodle_meeting["scoid"], adobe_id: moodle_meeting["adobeconnectid"], start_time: DateTime.strptime(moodle_meeting["starttime"].to_s,'%s'), end_time: DateTime.strptime(moodle_meeting["endtime"].to_s,'%s'), duration: (moodle_meeting["endtime"].to_i - moodle_meeting["starttime"].to_i)/60 )
             end
         end
