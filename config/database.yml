@@ -39,8 +39,8 @@ external_moodle:
   adapter: postgresql
   encoding: unicode
   pool: 50
-  host: 172.16.8.170
-  database: 10june
+  host: 172.16.23.156
+  database: elearn99
   username: mdluser
   password: K{4P_PU:kFbGzqM
 

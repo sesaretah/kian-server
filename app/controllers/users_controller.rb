@@ -14,7 +14,7 @@ class UsersController < ApplicationController
             end
             redirect_to('https://kian.ut.ac.ir/login_jwt/'+JWTWrapper.encode({ user_id: user.id }))
         else
-            redirect_to('https://kian.ut.ac.ir/app.html#!/login_error/')
+            redirect_to('https://kian.ut.ac.ir/login_error/')
         end
       end
     
