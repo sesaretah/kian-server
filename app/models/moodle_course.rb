@@ -97,7 +97,10 @@ class MoodleCourse < ActiveRecord::Base
     end
 
     def self.import_profiles
-        profiles =  MoodleCourse.connection.exec_query("select username, id, firstname, lastname from mdl_user")
+        last_mid = 0 
+        last_profile = MoodleProfile.all.order('mid desc').first
+        last_mid = last_profile.mid  if !last_profile.blank?
+        profiles =  MoodleCourse.connection.exec_query("select username, id, firstname, lastname from mdl_user where id > #{last_mid}")
          for profile in profiles
             prf = MoodleProfile.where(utid: profile["username"]).first
             if prf.blank?
