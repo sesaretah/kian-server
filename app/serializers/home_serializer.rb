@@ -9,7 +9,7 @@ class HomeSerializer < ActiveModel::Serializer
             date_trunc('day', start_time) as Day,
             count(1)
         from meetings
-        where start_time > '2020-09-30 01:00:00'
+        where start_time > '#{1.months.ago}'
         group by 1
         order by Day")
         for meeting in meetings
@@ -27,7 +27,7 @@ class HomeSerializer < ActiveModel::Serializer
             date_trunc('hour', start_time) as Day,
             count(1)
         from meetings
-        where start_time > '#{10.days.ago}'
+        where start_time > '#{1.months.ago}'
         group by 1
         order by Day")
         for meeting in meetings
