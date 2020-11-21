@@ -24,4 +24,21 @@ class Course < ApplicationRecord
       Faculty.where(serial: self.faculty_id).first
     end
 
+    def section
+      if !self.serial.blank?
+        section_mid = self.serial[4,2]
+        section = Section.where(mid: section_mid).first
+      end
+      return section if !section.blank?
+    end
+
+    def self.viewable(courses, user)
+      result = []
+      for course in courses
+        p course.section
+        result << course if Skope.is_able?(user, course.section)
+      end
+      return result
+    end
+
 end

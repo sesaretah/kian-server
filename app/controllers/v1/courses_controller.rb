@@ -2,14 +2,15 @@ class V1::CoursesController < ApplicationController
 
 
   def index
-    courses = Course.where('serial like ?', '%399%').paginate(page: 1, per_page: 30)
-    render json: { data: ActiveModel::SerializableResource.new(courses,  each_serializer: CourseShowSerializer ).as_json, klass: 'Course' }, status: :ok
+    result = []
+    courses = Course.where('serial like ?', '%399%').paginate(page: 1, per_page: 100)
+    render json: { data: ActiveModel::SerializableResource.new(Course.viewable(courses, current_user),  each_serializer: CourseShowSerializer ).as_json, klass: 'Course' }, status: :ok
   end
 
   def search
-    if !params[:q].blank?
-      courses = Course.search params[:q], star: true
-      render json: { data: ActiveModel::SerializableResource.new(courses,  each_serializer: CourseShowSerializer ).as_json, klass: 'Course' }, status: :ok
+    if !params[:q].blank? && params[:q].length > 2
+      courses = Course.search params[:q], star: true, :max_matches => 1_000,  :per_page    => 1_000
+      render json: { data: ActiveModel::SerializableResource.new(Course.viewable(courses, current_user),  each_serializer: CourseShowSerializer ).as_json, klass: 'Course' }, status: :ok
     else 
       render json: { data: [], klass: 'Course' }, status: :ok
     end
@@ -34,15 +35,14 @@ class V1::CoursesController < ApplicationController
   def section
     
     section = Section.find(params[:section_id])
-    if !section.blank? && Skope.is_able?(current_user, section.id)
+    if !section.blank? && Skope.is_able?(current_user, section)
       courses = Course.where('serial like ?', "3991#{section.mid}%")
       render json: { data: SectionSerializer.new(courses).as_json,  klass: 'Section' }, status: :ok
     end
   end
 
   def sections
-    p "*******"
-    p current_user
+
     sections = Section.where('id in (?)', Skope.user_sections(current_user))
     render json: { data: sections.sort_by { |h| h[:title] }.as_json, klass: 'Section' }, status: :ok
   end
@@ -52,7 +52,11 @@ class V1::CoursesController < ApplicationController
     if @course.blank?
       @course = Course.find_by_serial(params[:id])
     end
-    render json: { data: CourseSerializer.new(@course).as_json,  klass: 'Course' }, status: :ok
+    if Skope.is_able?(current_user, @course.section)
+      render json: { data: CourseSerializer.new(@course).as_json,  klass: 'Course' }, status: :ok
+    else
+      render json: { data: [],  klass: 'Course' }, status: :ok
+    end
   end
 
 
