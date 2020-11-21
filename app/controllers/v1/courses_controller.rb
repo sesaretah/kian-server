@@ -32,13 +32,18 @@ class V1::CoursesController < ApplicationController
   end
 
   def section
+    
     section = Section.find(params[:section_id])
-    courses = Course.where('serial like ?', "3991#{section.mid}%")
-    render json: { data: SectionSerializer.new(courses).as_json,  klass: 'Section' }, status: :ok
+    if !section.blank? && Skope.is_able?(current_user, section.id)
+      courses = Course.where('serial like ?', "3991#{section.mid}%")
+      render json: { data: SectionSerializer.new(courses).as_json,  klass: 'Section' }, status: :ok
+    end
   end
 
   def sections
-    sections = Section.all
+    p "*******"
+    p current_user
+    sections = Section.where('id in (?)', Skope.user_sections(current_user))
     render json: { data: sections.sort_by { |h| h[:title] }.as_json, klass: 'Section' }, status: :ok
   end
 
