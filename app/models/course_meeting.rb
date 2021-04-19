@@ -4,7 +4,7 @@ class CourseMeeting < ApplicationRecord
   require "open-uri"
   require "jalalidate"
   def self.get_meeting
-    p course_id
+    #p course_id
     #if !course_id.blank? && !module_id.blank? && !label.blank?
     agent = Mechanize.new
 
