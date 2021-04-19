@@ -224,7 +224,7 @@ class MoodleCourse < ActiveRecord::Base
     #CourseModule.destroy_all
     #CourseSco.destroy_all
     #Course.destroy_all
-    #CourseMeeting.destroy_all
+    CourseMeeting.destroy_all
     #Meeting.destroy_all
     #BigBlue.destroy_all
     #BbMeetingDuration.destroy_all
