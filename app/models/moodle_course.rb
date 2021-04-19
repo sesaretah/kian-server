@@ -124,7 +124,7 @@ class MoodleCourse < ActiveRecord::Base
       when 38
         label = "5"
       end
-      CourseMeeting.get_meeting(course_id: course_module.course_id, module_id: course_module.mid, label: label)
+      CourseMeeting.get_meeting(course_module.course_id, course_module.mid, label)
       #   end
       #end
     end

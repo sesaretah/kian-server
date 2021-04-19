@@ -40,7 +40,7 @@ require 'jalalidate'
         end_time_g = JalaliDate.new(end_date[0].to_i,end_date[1].to_i,end_date[2].to_i, end_time[0].to_i, end_time[1].to_i)
         end_time_g = Time.parse("#{end_time_g.to_g} #{end_time_g.strftime('%X')}")
         
-        CourseMeeting.create(course_id: course_id, sco_id: sco_id,start_time: start_time_g, end_time: end_time_g, duration: duration)
+        CourseMeeting.create(course_id: course_id, sco_id: '',start_time: start_time_g, end_time: end_time_g, duration: (end_time_g-start_time_g)/60)
         #course_sessions << {"start" => start_time_g, "end" => end_time_g, "duration" => duration}
     end
   end
