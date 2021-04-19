@@ -19,6 +19,7 @@ require 'jalalidate'
     course = agent.get 'https://elearn5.ut.ac.ir/mod/adobeconnect'+label.to_s+'/view.php?id='+module_id.to_s
     doc = Nokogiri::HTML(course.body)
     table = doc.search('table')[0]
+    if (!table.blank?)
     table.search('tr').drop(1).each do |tr|
         tds = tr.search('td')
         if tds[4].text.include? 'ساعت'
@@ -43,5 +44,6 @@ require 'jalalidate'
         CourseMeeting.create(course_id: course_id, sco_id: '',start_time: start_time_g, end_time: end_time_g, duration: (end_time_g-start_time_g)/60)
         #course_sessions << {"start" => start_time_g, "end" => end_time_g, "duration" => duration}
     end
+end
   end
 end
