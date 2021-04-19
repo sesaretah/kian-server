@@ -16,7 +16,7 @@ require 'jalalidate'
     form.password = ''
     form.submit
     
-    course = agent.get 'https://elearn5.ut.ac.ir/mod/adobeconnect'+label+'/view.php?id='+module_id
+    course = agent.get 'https://elearn5.ut.ac.ir/mod/adobeconnect'+label.to_s+'/view.php?id='+module_id.to_s
     doc = Nokogiri::HTML(course.body)
     table = doc.search('table')[0]
     table.search('tr').drop(1).each do |tr|
