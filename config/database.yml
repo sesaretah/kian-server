@@ -40,7 +40,7 @@ external_moodle:
   encoding: unicode
   pool: 50
   host: 172.16.23.156
-  database: elearn99
+  database: elearn992
   username: mdluser
   password: K{4P_PU:kFbGzqM
 
