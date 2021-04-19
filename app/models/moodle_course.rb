@@ -239,7 +239,7 @@ class MoodleCourse < ActiveRecord::Base
     self.add_semster_to_course_modules(semster)
 
     p "Importing Course Meetings"
-    self.import_meetings
+    #self.import_meetings
     self.import_profiles
     self.import_course_teachers
 

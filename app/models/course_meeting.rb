@@ -1,5 +1,6 @@
 class CourseMeeting < ApplicationRecord
   def self.get_meeting(course_id, module_id,  label)
+    p course_id
     agent = Mechanize.new
 
     # Get the flickr sign in page
