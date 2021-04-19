@@ -1,4 +1,8 @@
 class CourseMeeting < ApplicationRecord
+    require 'mechanize'
+require 'nokogiri'
+require 'open-uri'
+require 'jalalidate'
   def self.get_meeting(course_id, module_id,  label)
     p course_id
     agent = Mechanize.new
