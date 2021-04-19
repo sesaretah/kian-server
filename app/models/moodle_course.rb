@@ -217,7 +217,7 @@ class MoodleCourse < ActiveRecord::Base
   def self.prepare_semster(semster)
     p "Prepare Started"
     #ApplicationRecord.connection.exec_query("TRUNCATE courses, course_modules, meetings RESTART IDENTITY")
-    ApplicationRecord.connection.exec_query("TRUNCATE course_teachers, moodle_profiles, course_meetings, bb_meeting_durations, bb_meetings  RESTART IDENTITY")
+    #ApplicationRecord.connection.exec_query("TRUNCATE course_teachers, moodle_profiles, course_meetings, bb_meeting_durations, bb_meetings  RESTART IDENTITY")
 
     #CourseTeacher.destroy_all
     #MoodleProfile.destroy_all
@@ -231,17 +231,17 @@ class MoodleCourse < ActiveRecord::Base
     #BbMeeting.destroy_all
 
     p "Importing Courses"
-    self.import_course
-    self.set_faculty
-    self.set_semster
+    #self.import_course
+    #self.set_faculty
+    #self.set_semster
     p "Importing Course Modules"
-    self.import_course_modules(semster)
-    self.add_semster_to_course_modules(semster)
+    #self.import_course_modules(semster)
+    #self.add_semster_to_course_modules(semster)
 
     p "Importing Course Meetings"
     #self.import_meetings
-    self.import_profiles
-    self.import_course_teachers
+    #self.import_profiles
+    #self.import_course_teachers
 
     p "Constructing Course Meetings"
     self.construct_course_meeting
