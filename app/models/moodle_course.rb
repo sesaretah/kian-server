@@ -108,26 +108,27 @@ class MoodleCourse < ActiveRecord::Base
   end
 
   def self.construct_course_meeting
-    modules = [28, 36, 37, 39]
-    for course_module in CourseModule.where("module_id in (?)", modules)
-      #meetings = course_module.meetings
-      #for meeting in meetings
-      #    cmeeting = CourseMeeting.where(course_id: course_module.course_id, sco_id: meeting.sco_id).first
-      #   if cmeeting.blank?
-      case course_module.module_id
-      when 28
-        label = ""
-      when 36
-        label = "2"
-      when 37
-        label = "3"
-      when 38
-        label = "5"
-      end
-      CourseMeeting.get_meeting(course_module.course_id, course_module.mid, label)
-      #   end
-      #end
-    end
+    # modules = [28, 36, 37, 39]
+    #for course_module in CourseModule.where("module_id in (?)", modules)
+    #meetings = course_module.meetings
+    #for meeting in meetings
+    #    cmeeting = CourseMeeting.where(course_id: course_module.course_id, sco_id: meeting.sco_id).first
+    #   if cmeeting.blank?
+    #case course_module.module_id
+    # when 28
+    #   label = ""
+    # when 36
+    #   label = "2"
+    # when 37
+    #   label = "3"
+    # when 38
+    #  label = "5"
+    # end
+    # CourseMeeting.get_meeting(course_module.course_id, course_module.mid, label)
+    #   end
+    #end
+    # end
+    CourseMeeting.get_meeting()
   end
 
   def self.calculate_meeting_duration
@@ -217,6 +218,7 @@ class MoodleCourse < ActiveRecord::Base
   def self.prepare_semster(semster)
     p "Prepare Started"
     #ApplicationRecord.connection.exec_query("TRUNCATE courses, course_modules, meetings RESTART IDENTITY")
+    ApplicationRecord.connection.exec_query("TRUNCATE course_meetings, meetings RESTART IDENTITY")
     #ApplicationRecord.connection.exec_query("TRUNCATE course_teachers, moodle_profiles, course_meetings, bb_meeting_durations, bb_meetings  RESTART IDENTITY")
 
     #CourseTeacher.destroy_all
