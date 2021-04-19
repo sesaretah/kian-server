@@ -31,8 +31,8 @@ class CourseMeeting < ApplicationRecord
           start_date_g = JalaliDate.new(start_date[0].to_i, start_date[1].to_i, start_date[2].to_i, start_time[0].to_i, start_time[1].to_i)
           start_time_g = Time.parse("#{start_date_g.to_g} #{start_date_g.strftime("%X")}")
 
-          end_date_raw = tds[2].text.split(" ")[1]
-          end_time_raw = tds[2].text.split(" ")[0]
+          end_date_raw = tds[3].text.split(" ")[1]
+          end_time_raw = tds[3].text.split(" ")[0]
           end_date = end_date_raw.split("/")
           end_time = end_time_raw.split(":")
           end_time_g = JalaliDate.new(end_date[0].to_i, end_date[1].to_i, end_date[2].to_i, end_time[0].to_i, end_time[1].to_i)
