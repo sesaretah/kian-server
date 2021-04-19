@@ -25,18 +25,24 @@ class CourseMeeting < ApplicationRecord
           tds = tr.search("td")
 
           start_date_raw = tds[2].text.split(" ")[1]
+          p tds[2].text.split(" ")[1]
           start_time_raw = tds[2].text.split(" ")[0]
           start_date = start_date_raw.split("/")
           start_time = start_time_raw.split(":")
           start_date_g = JalaliDate.new(start_date[0].to_i, start_date[1].to_i, start_date[2].to_i, start_time[0].to_i, start_time[1].to_i)
+          p start_date_g
           start_time_g = Time.parse("#{start_date_g.to_g} #{start_date_g.strftime("%X")}")
+          p start_time_g
 
           end_date_raw = tds[3].text.split(" ")[1]
+          p tds[3].text.split(" ")[1]
           end_time_raw = tds[3].text.split(" ")[0]
           end_date = end_date_raw.split("/")
           end_time = end_time_raw.split(":")
-          end_time_g = JalaliDate.new(end_date[0].to_i, end_date[1].to_i, end_date[2].to_i, end_time[0].to_i, end_time[1].to_i)
-          end_time_g = Time.parse("#{end_time_g.to_g} #{end_time_g.strftime("%X")}")
+          end_date_g = JalaliDate.new(end_date[0].to_i, end_date[1].to_i, end_date[2].to_i, end_time[0].to_i, end_time[1].to_i)
+          p end_date_g
+          end_time_g = Time.parse("#{end_date_g.to_g} #{end_date_g.strftime("%X")}")
+          p end_time_g
 
           CourseMeeting.create(course_id: course_id, sco_id: "", start_time: start_time_g, end_time: end_time_g, duration: (end_time_g - start_time_g) / 60)
           #course_sessions << {"start" => start_time_g, "end" => end_time_g, "duration" => duration}
