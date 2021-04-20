@@ -18,7 +18,7 @@ class CourseMeeting < ApplicationRecord
     form.submit
 
     modules = [28, 36, 37, 39]
-    for course_module in CourseModule.where("module_id in (?)", modules)
+    for course_module in CourseModule.where("module_id in (?) and course_id > 58474", modules)
       case course_module.module_id
       when 28
         label = ""
