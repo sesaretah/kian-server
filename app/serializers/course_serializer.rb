@@ -23,7 +23,7 @@ class CourseSerializer < ActiveModel::Serializer
     #sco_ids = []
     #course_module_ids =  object.course_modules.where('module_id in (?)', modules).pluck(:mid)
     #sco_ids = Meeting.where('course_module_id in (?)', course_module_ids).pluck(:sco_id).uniq if !course_module_ids.blank?
-    return CourseMeeting.count(course_id: object.mid)
+    return CourseMeeting.where(course_id: object.mid).count
   end
 
   def meetings
@@ -38,7 +38,7 @@ class CourseSerializer < ActiveModel::Serializer
     #  end
     #end
     #return meeting
-    return CourseMeeting.count(course_id: object.mid).order("start_time")
+    return CourseMeeting.where(course_id: object.mid).order("start_time")
   end
 
   def bb_meetings
