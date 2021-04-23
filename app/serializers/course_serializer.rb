@@ -3,7 +3,8 @@ class CourseSerializer < ActiveModel::Serializer
 
   attributes :id, :mid, :title, :serial, :avarage, :number_of_meetings,
              :meetings, :attendances, :modules, :teacher,
-             :bb_meetings, :number_of_bb_meetings, :bb_avarage
+             :bb_meetings, :number_of_bb_meetings, :bb_avarage,
+             :student_view_histogram, :teacher_view_histogram
 
   def id
     object.mid
@@ -16,6 +17,28 @@ class CourseSerializer < ActiveModel::Serializer
   def teacher
     teachers = CourseTeacher.where(course_id: object.mid).pluck(:fullname)
     teachers.first if !teachers.blank?
+  end
+
+  def student_view_histogram
+    student_ids = CourseStudent.where(course_id: object.mid).pluck(:user_id).uniq
+    MoodleCourse.connection.exec_query("select
+            date_trunc('day', TO_TIMESTAMP(timecreated)) as Day,
+            count(1)
+        from mdl_logstore_standard_log
+        where courseid = #{object.mid} and action = 'viewed' and target = 'course' and userid in (#{student_ids.join(",")})
+        group by 1
+        order by Day")
+  end
+
+  def teacher_view_histogram
+    teacher_ids = CourseTeacher.where(course_id: object.mid).pluck(:user_id).uniq
+    MoodleCourse.connection.exec_query("select
+            date_trunc('day', TO_TIMESTAMP(timecreated)) as Day,
+            count(1)
+        from mdl_logstore_standard_log
+        where courseid = #{object.mid} and action = 'viewed' and target = 'course' and userid in (#{teacher_ids.join(",")})
+        group by 1
+        order by Day")
   end
 
   def number_of_meetings
