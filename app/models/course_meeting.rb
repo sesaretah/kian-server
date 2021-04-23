@@ -26,7 +26,7 @@ class CourseMeeting < ApplicationRecord
         label = "2"
       when 37
         label = "3"
-      when 38
+      when 39
         label = "5"
       end
       course_id = course_module.course_id
@@ -43,6 +43,11 @@ class CourseMeeting < ApplicationRecord
 
               if !tds[2].text.blank? && tds[2].text != ""
                 start_date_raw = tds[2].text.split(" ")[1]
+                if start_date_raw.blank?
+                  p "Problem Here!"
+                  p course_id
+                  p tds[2].text
+                end
                 start_time_raw = tds[2].text.split(" ")[0]
                 start_date = start_date_raw.split("/")
                 start_time = start_time_raw.split(":")
