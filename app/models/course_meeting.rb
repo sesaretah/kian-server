@@ -67,7 +67,10 @@ class CourseMeeting < ApplicationRecord
                 end
               end
               if !start_time_g.blank? && !end_time_g.blank?
-                CourseMeeting.create(course_id: course_id, sco_id: "", start_time: start_time_g, end_time: end_time_g, duration: (end_time_g - start_time_g) / 60)
+                course_meeting = CourseMeeting.where(course_id: course_id, start_time: start_time_g, duration: (end_time_g - start_time_g) / 60).first
+                if course_meeting.blank?
+                  CourseMeeting.create(course_id: course_id, sco_id: "", start_time: start_time_g, end_time: end_time_g, duration: (end_time_g - start_time_g) / 60)
+                end
               end
             end
           end

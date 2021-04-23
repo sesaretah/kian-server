@@ -1,7 +1,7 @@
 class HomeSerializer < ActiveModel::Serializer
   include Rails.application.routes.url_helpers
   attributes :meeting_histogram, :bb_meeting_histogram,
-             :hour_meeting_histogram
+             :hour_meeting_histogram, :course_views_histogram
 
   def meeting_histogram
     result = []
@@ -9,7 +9,7 @@ class HomeSerializer < ActiveModel::Serializer
             date_trunc('day', start_time) as Day,
             count(1)
         from course_meetings
-        where start_time > '#{2.months.ago}'
+        where start_time > '#{Time.at(1612965838)}'
         group by 1
         order by Day")
     for meeting in meetings
@@ -27,7 +27,7 @@ class HomeSerializer < ActiveModel::Serializer
             date_trunc('hour', start_time) as Day,
             count(1)
         from course_meetings
-        where start_time > '#{2.months.ago}'
+        where start_time > '#{1.months.ago}'
         group by 1
         order by Day")
     for meeting in meetings
@@ -45,7 +45,20 @@ class HomeSerializer < ActiveModel::Serializer
             date_trunc('day', start_time) as Day,
             count(1)
         from bb_meetings
+        where start_time > '#{Time.at(1612965838)}'
         group by 1
         order by Day")
+  end
+
+  def course_views_histogram
+    MoodleCourse.connection.exec_query("
+      select
+            date_trunc('day', TO_TIMESTAMP(timecreated)) as Day,
+            count(1)
+        from mdl_logstore_standard_log
+        where  action = 'viewed' and target = 'course' 
+        group by 1
+        order by Day
+      ")
   end
 end
