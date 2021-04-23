@@ -43,25 +43,24 @@ class CourseMeeting < ApplicationRecord
 
               if !tds[2].text.blank? && tds[2].text != ""
                 start_date_raw = tds[2].text.split(" ")[1]
-                if start_date_raw.blank?
-                  p "Problem Here!"
-                  p course_id
-                  p tds[2].text
+                if !start_date_raw.blank?
+                  start_time_raw = tds[2].text.split(" ")[0]
+                  start_date = start_date_raw.split("/")
+                  start_time = start_time_raw.split(":")
+                  start_date_g = JalaliDate.new(start_date[0].to_i, start_date[1].to_i, start_date[2].to_i, start_time[0].to_i, start_time[1].to_i)
+                  start_time_g = Time.parse("#{start_date_g.to_g} #{start_time[0].to_i}:#{start_time[1].to_i}")
                 end
-                start_time_raw = tds[2].text.split(" ")[0]
-                start_date = start_date_raw.split("/")
-                start_time = start_time_raw.split(":")
-                start_date_g = JalaliDate.new(start_date[0].to_i, start_date[1].to_i, start_date[2].to_i, start_time[0].to_i, start_time[1].to_i)
-                start_time_g = Time.parse("#{start_date_g.to_g} #{start_time[0].to_i}:#{start_time[1].to_i}")
               end
 
               if !tds[3].text.blank? && tds[3].text != ""
                 end_date_raw = tds[3].text.split(" ")[1]
-                end_time_raw = tds[3].text.split(" ")[0]
-                end_date = end_date_raw.split("/")
-                end_time = end_time_raw.split(":")
-                end_date_g = JalaliDate.new(end_date[0].to_i, end_date[1].to_i, end_date[2].to_i, end_time[0].to_i, end_time[1].to_i)
-                end_time_g = Time.parse("#{end_date_g.to_g} #{end_time[0].to_i}:#{end_time[1].to_i}")
+                if !end_date_raw.blank?
+                  end_time_raw = tds[3].text.split(" ")[0]
+                  end_date = end_date_raw.split("/")
+                  end_time = end_time_raw.split(":")
+                  end_date_g = JalaliDate.new(end_date[0].to_i, end_date[1].to_i, end_date[2].to_i, end_time[0].to_i, end_time[1].to_i)
+                  end_time_g = Time.parse("#{end_date_g.to_g} #{end_time[0].to_i}:#{end_time[1].to_i}")
+                end
               end
               if !start_time_g.blank? && !end_time_g.blank?
                 CourseMeeting.create(course_id: course_id, sco_id: "", start_time: start_time_g, end_time: end_time_g, duration: (end_time_g - start_time_g) / 60)
