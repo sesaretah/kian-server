@@ -17,7 +17,7 @@ class CourseMeeting < ApplicationRecord
     form.password = ""
     form.submit
 
-    modules = [28, 36, 37, 39]
+    modules = [28, 36, 37, 38, 39, 42]
     for course_module in CourseModule.where("module_id in (?)", modules)
       case course_module.module_id
       when 28
@@ -26,8 +26,12 @@ class CourseMeeting < ApplicationRecord
         label = "2"
       when 37
         label = "3"
+      when 38
+        label = "4"
       when 39
         label = "5"
+      when 42
+        label = "6"
       end
       course_id = course_module.course_id
       module_id = course_module.mid
