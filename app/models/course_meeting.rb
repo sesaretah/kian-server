@@ -18,7 +18,7 @@ class CourseMeeting < ApplicationRecord
     form.submit
 
     modules = [28, 36, 37, 38, 39, 42]
-    for course in Course.where(course_id: 52327)
+    for course in Course.where(mid: 52327)
       course_modules = CourseModule.where("module_id in (?) and course_id = ?", modules, course.id)
       for course_module in course_modules
         case course_module.module_id
