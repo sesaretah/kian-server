@@ -40,7 +40,7 @@ class CourseMeeting < ApplicationRecord
         if !course_id.blank? && !module_id.blank? #&& !label.blank?
           p course_id
           p course_module.mid
-          p "     "
+          p "    "
           course = agent.get "https://elearn5.ut.ac.ir/mod/adobeconnect" + label.to_s + "/view.php?id=" + module_id.to_s rescue nil
           if !course.blank?
             doc = Nokogiri::HTML(course.body)
