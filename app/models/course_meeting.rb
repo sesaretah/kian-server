@@ -35,7 +35,7 @@ class CourseMeeting < ApplicationRecord
         when 42
           label = "6"
         end
-        course_id = course.id
+        course_id = course_module.course_id
         module_id = course_module.mid
         if !course_id.blank? && !module_id.blank? && !label.blank?
           p course_id
