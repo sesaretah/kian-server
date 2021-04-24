@@ -18,7 +18,7 @@ class CourseMeeting < ApplicationRecord
     form.submit
 
     modules = [28, 36, 37, 38, 39, 42]
-    for course in Course.where(mid: 52327)
+    for course in Course.all
       course_modules = CourseModule.where("module_id in (?) and course_id = ?", modules, course.id)
       for course_module in course_modules
         case course_module.module_id
@@ -37,9 +37,10 @@ class CourseMeeting < ApplicationRecord
         end
         course_id = course_module.course_id
         module_id = course_module.mid
-        if !course_id.blank? && !module_id.blank? && !label.blank?
+        if !course_id.blank? && !module_id.blank? #&& !label.blank?
           p course_id
           p course_module.mid
+          p "     "
           course = agent.get "https://elearn5.ut.ac.ir/mod/adobeconnect" + label.to_s + "/view.php?id=" + module_id.to_s rescue nil
           if !course.blank?
             doc = Nokogiri::HTML(course.body)
@@ -48,7 +49,7 @@ class CourseMeeting < ApplicationRecord
               table.search("tr").drop(1).each do |tr|
                 tds = tr.search("td")
 
-                if !tds[2].text.blank? && tds[2].text != ""
+                if !tds[2].blank? && !tds[2].text.blank? && tds[2].text != ""
                   start_date_raw = tds[2].text.split(" ")[1]
                   if !start_date_raw.blank?
                     start_time_raw = tds[2].text.split(" ")[0]
@@ -59,7 +60,7 @@ class CourseMeeting < ApplicationRecord
                   end
                 end
 
-                if !tds[3].text.blank? && tds[3].text != ""
+                if !tds[3].blank? && !tds[3].text.blank? && tds[3].text != ""
                   end_date_raw = tds[3].text.split(" ")[1]
                   if !end_date_raw.blank?
                     end_time_raw = tds[3].text.split(" ")[0]
