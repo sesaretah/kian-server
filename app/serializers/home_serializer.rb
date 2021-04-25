@@ -1,7 +1,8 @@
 class HomeSerializer < ActiveModel::Serializer
   include Rails.application.routes.url_helpers
   attributes :meeting_histogram, :bb_meeting_histogram,
-             :hour_meeting_histogram, :course_views_histogram
+             :hour_meeting_histogram, :course_views_histogram,
+             :usage_pi, :sessions_pi
 
   def meeting_histogram
     result = []
@@ -48,6 +49,22 @@ class HomeSerializer < ActiveModel::Serializer
         where start_time > '#{Time.at(1612965838)}'
         group by 1
         order by Day")
+  end
+
+  def usage_pi
+    meeting_duration = Meeting.connection.exec_query("SELECT SUM (duration) AS total
+    FROM course_meetings;")
+    bb_meeting_duration = Meeting.connection.exec_query("SELECT SUM (duration) AS total
+    FROM bb_meetings where start_time > '#{Time.at(1612965838)}' ;")
+    return [meeting_duration[0]["total"], bb_meeting_duration[0]["total"]]
+  end
+
+  def sessions_pi
+    meeting_duration = Meeting.connection.exec_query("SELECT count(*)
+    FROM course_meetings;")
+    bb_meeting_duration = Meeting.connection.exec_query("SELECT count(*)
+    FROM bb_meetings where start_time > '#{Time.at(1612965838)}' ;")
+    return [meeting_duration[0]["count"], bb_meeting_duration[0]["count"]]
   end
 
   def course_views_histogram
