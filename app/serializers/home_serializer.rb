@@ -2,7 +2,7 @@ class HomeSerializer < ActiveModel::Serializer
   include Rails.application.routes.url_helpers
   attributes :meeting_histogram, :bb_meeting_histogram,
              :hour_meeting_histogram, :course_views_histogram,
-             :usage_pi, :sessions_pi
+             :usage_pi, :sessions_pi, :boxplot
 
   def meeting_histogram
     result = []
@@ -77,5 +77,15 @@ class HomeSerializer < ActiveModel::Serializer
         group by 1
         order by Day
       ")
+  end
+
+  def boxplot
+    result = Meeting.connection.exec_query("SELECT faculty_id, course_id, SUM(duration), ntile(4) over (order by SUM(duration)) as quartile 
+    FROM course_meetings
+    INNER JOIN courses on course_meetings.course_id = courses.mid
+    GROUP BY course_id, faculty_id
+    order by faculty_id")
+    h = result.rows.group_by { |item| item[0].itself.to_s[0..1] }
+    return h.transform_keys { |key| Section.where(mid: key).first.title }
   end
 end
