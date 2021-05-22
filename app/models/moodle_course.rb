@@ -80,10 +80,16 @@ class MoodleCourse < ActiveRecord::Base
     end
   end
 
-  def self.import_course_scos(i)
-    course_scos = MoodleCourse.connection.exec_query("select course, meetingscoid from mdl_adobeconnect_meeting_groups inner join mdl_adobeconnect on mdl_adobeconnect.id = mdl_adobeconnect_meeting_groups.instanceid ")
-    for course_sco in course_scos
-      CourseSco.create(course_id: course_sco["course"], sco_id: course_sco["meetingscoid"])
+  def self.import_course_scos
+    m = ["", "2", "3", "4", "5", "6"]
+    for i in m
+      course_scos = MoodleCourse.connection.exec_query("select course, meetingscoid from mdl_adobeconnect#{i}_meeting_groups inner join mdl_adobeconnect#{i} on mdl_adobeconnect#{i}.id = mdl_adobeconnect#{i}_meeting_groups.instanceid ")
+      for course_sco in course_scos
+        cs = CourseSco.where(course_id: course_sco["course"], sco_id: course_sco["meetingscoid"]).first
+        if cs.blank? #&& course_sco["course"].to_i && course_sco["meetingscoid"].to_i
+          CourseSco.create(course_id: course_sco["course"], sco_id: course_sco["meetingscoid"], module: i)
+        end
+      end
     end
   end
 

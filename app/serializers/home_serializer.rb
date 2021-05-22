@@ -24,21 +24,53 @@ class HomeSerializer < ActiveModel::Serializer
 
   def hour_meeting_histogram
     result = []
-    meetings = Meeting.connection.exec_query("select
-            date_trunc('hour', start_time) as Day,
-            count(1)
-        from course_meetings
-        where start_time > '#{1.months.ago}'
-        group by 1
-        order by Day")
-    for meeting in meetings
-      #if meeting['count'] > 10000
-      #    meeting['count'] = meeting['count'].to_i - (meeting['count'].to_i * 3 / 4)
-      #end
-      meeting["day"] = meeting["day"].to_datetime.in_time_zone("Tehran")
-      result << meeting
+    # meetings = Meeting.connection.exec_query("select
+    #         date_trunc('hour', start_time) as Day,
+    #         count(1)
+    #     from course_meetings
+    #     where start_time > '#{2.months.ago}'
+    #     group by 1
+    #     order by Day")
+
+    meetings = Meeting.connection.exec_query("
+        SELECT 
+          CASE 
+            WHEN date_part('hour',start_time AT TIME ZONE 'UTC') BETWEEN 0 AND 7 THEN '6'
+            WHEN date_part('hour',start_time AT TIME ZONE 'UTC') BETWEEN 7 AND 9 THEN '8'
+            WHEN date_part('hour',start_time AT TIME ZONE 'UTC') BETWEEN 9 AND 11 THEN '10' 
+            WHEN date_part('hour',start_time AT TIME ZONE 'UTC') BETWEEN 11 AND 13 THEN '12' 
+            WHEN date_part('hour',start_time AT TIME ZONE 'UTC') BETWEEN 13 AND 15 THEN '14' 
+            WHEN date_part('hour',start_time AT TIME ZONE 'UTC') BETWEEN 15 AND 17 THEN '16'
+            WHEN date_part('hour',start_time AT TIME ZONE 'UTC') BETWEEN 17 AND 19 THEN '18'
+            WHEN date_part('hour',start_time AT TIME ZONE 'UTC') BETWEEN 19 AND 21 THEN '20'
+            WHEN date_part('hour',start_time AT TIME ZONE 'UTC') BETWEEN 21 AND 23 THEN '22'
+          END,
+        COUNT(*)
+        FROM course_meetings
+        GROUP BY  
+          CASE 
+          WHEN date_part('hour',start_time AT TIME ZONE 'UTC') BETWEEN 0 AND 7 THEN '6'
+          WHEN date_part('hour',start_time AT TIME ZONE 'UTC') BETWEEN 7 AND 9 THEN '8'
+          WHEN date_part('hour',start_time AT TIME ZONE 'UTC') BETWEEN 9 AND 11 THEN '10' 
+          WHEN date_part('hour',start_time AT TIME ZONE 'UTC') BETWEEN 11 AND 13 THEN '12' 
+          WHEN date_part('hour',start_time AT TIME ZONE 'UTC') BETWEEN 13 AND 15 THEN '14' 
+          WHEN date_part('hour',start_time AT TIME ZONE 'UTC') BETWEEN 15 AND 17 THEN '16'
+          WHEN date_part('hour',start_time AT TIME ZONE 'UTC') BETWEEN 17 AND 19 THEN '18'
+          WHEN date_part('hour',start_time AT TIME ZONE 'UTC') BETWEEN 19 AND 21 THEN '20'
+          WHEN date_part('hour',start_time AT TIME ZONE 'UTC') BETWEEN 21 AND 23 THEN '22'
+        END
+        ")
+    #for meeting in meetings
+    #if meeting['count'] > 10000
+    #    meeting['count'] = meeting['count'].to_i - (meeting['count'].to_i * 3 / 4)
+    #end
+    #  meeting["day"] = meeting["day"].to_datetime.in_time_zone("Tehran")
+    #  result << meeting
+    #end
+    for meeting in meetings.sort_by { |hsh| hsh["case"].to_i }
+      result << { meeting["case"] => meeting["count"] }
     end
-    return result
+    return meetings.sort_by { |hsh| hsh["case"].to_i }
   end
 
   def bb_meeting_histogram

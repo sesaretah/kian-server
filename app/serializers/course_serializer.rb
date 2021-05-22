@@ -4,7 +4,8 @@ class CourseSerializer < ActiveModel::Serializer
   attributes :id, :mid, :title, :serial, :avarage, :number_of_meetings,
              :meetings, :attendances, :modules, :teacher,
              :bb_meetings, :number_of_bb_meetings, :bb_avarage,
-             :student_view_histogram, :teacher_view_histogram
+             :student_view_histogram, :teacher_view_histogram,
+             :students, :asset_sessions, :max
 
   def id
     object.mid
@@ -77,27 +78,32 @@ class CourseSerializer < ActiveModel::Serializer
   end
 
   def attendances
-    result = []
-    sco_ids = CourseSco.where(course_id: object.mid).pluck(:sco_id)
-    attendances = Attendance.where("sco_id in (?)", sco_ids).group_by(&:principal_id)
-    attendances.map do |principal_id, p_attendances|
-      principal = Principal.find_by_principal_id(principal_id)
-      if !principal.blank?
-        sum = 0
-        for p_at in p_attendances
-          if !p_at.end_time.blank?
-            sum += p_at.end_time.to_i - p_at.start_time.to_i
-          end
-        end
-        sum > 0 ? minutes = (sum / 60).to_f : minutes = 0
-        object.total_avarage_time[:total] > 0 ? percent = (minutes / object.total_avarage_time[:total]) * 100 : percent = 0
-        percent = 100 if percent > 100
-        mprofile = MoodleProfile.where(utid: principal.uid).first
-        !mprofile.blank? ? fullname = mprofile.fullname : fullname = ""
-        result << { utid: principal.uid, fullname: fullname, sum: minutes.round, percent: percent.round }
-      end
-    end
-    return result
+    Attendance.connection.exec_query("select principals.uid, asset_id, duration from attendances 
+    INNER JOIN principals ON principals.principal_id = attendances.principal_id
+    where course_id = #{object.mid} and length(principals.uid) > 7
+    group by principals.uid, asset_id, duration
+    order by principals.uid desc")
+  end
+
+  def students
+    Attendance.connection.exec_query("select principals.uid, principals.name from attendances 
+      INNER JOIN principals ON principals.principal_id = attendances.principal_id
+            where course_id = #{object.mid} and length(principals.uid) > 7
+            group by principals.uid, principals.name")
+  end
+
+  def asset_sessions
+    Attendance.connection.exec_query("select asset_id from attendances 
+      where course_id = #{object.mid}
+      group by asset_id
+      order by asset_id
+      ")
+  end
+
+  def max
+    Attendance.connection.exec_query("select asset_id, max(duration) from attendances 
+    where course_id = #{object.mid}
+    group by asset_id")
   end
 
   def modules
