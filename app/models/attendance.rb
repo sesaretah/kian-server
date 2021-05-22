@@ -52,7 +52,7 @@ class Attendance < ApplicationRecord
         domain = "http://vclas13.ut.ac.ir"
       end
       agent = Mechanize.new
-      page = agent.get "#{domain}/api/xml?action=login&login=itadmin&password=13Feb2021utec"
+      page = agent.get "#{domain}/api/xml?action=login&login=itadmin&password="
       h = Hash.from_xml(page.body)
       token = h["results"]["OWASP_CSRFTOKEN"]["token"]
       principal = agent.get "#{domain}/api/xml?action=principal-info&principal-id=#{self.principal_id}"

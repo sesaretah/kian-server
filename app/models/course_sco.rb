@@ -29,7 +29,7 @@ class CourseSco < ApplicationRecord
       domain = "http://vclas13.ut.ac.ir"
     end
 
-    page = agent.get "#{domain}/api/xml?action=login&login=itadmin&password=13Feb2021utec"
+    page = agent.get "#{domain}/api/xml?action=login&login=itadmin&password="
     h = Hash.from_xml(page.body)
     token = h["results"]["OWASP_CSRFTOKEN"]["token"]
     sessions_csv = agent.get "#{domain}/admin/meeting/sco/reports/sco/sessions/csv?account-id=7&sco-id=#{sco_id}&sort-date-created=desc&tab-id=11003&OWASP_CSRFTOKEN=#{token}"
