@@ -61,10 +61,12 @@ class CourseSco < ApplicationRecord
               e = ln.encode("utf-8")
               ar = e.split("\t")
               if !ar[1].blank? && !ar[2].blank?
-                principal_id = ar[1].delete(" \t\r\n").gsub(%r{\u0000}, "").to_i
-                start_time = DateTime.parse(ar[2].gsub(" \t\n", " ").gsub(%r{\u0000}, ""))
-                end_time = DateTime.parse(ar[3].gsub(" \t\n", " ").gsub(%r{\u0000}, ""))
-                Attendance.create(asset_id: asset_id, sco_id: sco_id, principal_id: principal_id, start_time: start_time, end_time: end_time, course_id: self.course_id, module: self.module, duration: 0)
+                principal_id = ar[1].delete(" \t\r\n").gsub(%r{\u0000}, "").to_i rescue nil
+                start_time = DateTime.parse(ar[2].gsub(" \t\n", " ").gsub(%r{\u0000}, "")) rescue nil
+                end_time = DateTime.parse(ar[3].gsub(" \t\n", " ").gsub(%r{\u0000}, "")) rescue nil
+                if !principal_id.blank? && !start_time.blank? && !end_time.blank?
+                  Attendance.create(asset_id: asset_id, sco_id: sco_id, principal_id: principal_id, start_time: start_time, end_time: end_time, course_id: self.course_id, module: self.module, duration: 0)
+                end
               end
             end
             att_line_num += 1
