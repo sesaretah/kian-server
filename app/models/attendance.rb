@@ -7,7 +7,7 @@ class Attendance < ApplicationRecord
   require "jalalidate"
 
   after_save :update_principal
-  before_save :check_unique
+  before_create :check_unique
   before_save :update_duration
   before_create :check_duration
 
