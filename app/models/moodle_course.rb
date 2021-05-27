@@ -81,7 +81,7 @@ class MoodleCourse < ActiveRecord::Base
   end
 
   def self.import_course_scos
-    m = ["", "2", "3", "4", "5", "6"]
+    m = ["", "2", "3", "5"]
     for i in m
       course_scos = MoodleCourse.connection.exec_query("select course, meetingscoid from mdl_adobeconnect#{i}_meeting_groups inner join mdl_adobeconnect#{i} on mdl_adobeconnect#{i}.id = mdl_adobeconnect#{i}_meeting_groups.instanceid ")
       for course_sco in course_scos
