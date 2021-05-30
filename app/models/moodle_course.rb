@@ -103,7 +103,10 @@ class MoodleCourse < ActiveRecord::Base
   def self.import_course_students
     course_students = MoodleCourse.connection.exec_query("SELECT c.id, u.firstname,u.lastname, u.id as user_id FROM mdl_course c JOIN mdl_context ct ON c.id = ct.instanceid JOIN mdl_role_assignments ra ON ra.contextid = ct.id JOIN mdl_user u ON u.id = ra.userid JOIN mdl_role r ON r.id = ra.roleid WHERE r.id = 5 ")
     for course_student in course_students
-      CourseStudent.create(course_id: course_student["id"], user_id: course_student["user_id"], fullname: "#{UnicodeFixer.fix(course_student["firstname"])} #{UnicodeFixer.fix(course_student["lastname"])}")
+      cs = CourseStudent.where(course_id: course_student["id"], user_id: course_student["user_id"]).first
+      if !cs.blank?
+        CourseStudent.create(course_id: course_student["id"], user_id: course_student["user_id"], fullname: "#{UnicodeFixer.fix(course_student["firstname"])} #{UnicodeFixer.fix(course_student["lastname"])}")
+      end
     end
   end
 
