@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_24_073447) do
+ActiveRecord::Schema.define(version: 2021_05_29_175839) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -61,6 +61,20 @@ ActiveRecord::Schema.define(version: 2021_05_24_073447) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["mid"], name: "index_big_blues_on_mid"
+  end
+
+  create_table "course_infos", force: :cascade do |t|
+    t.integer "course_id"
+    t.integer "resources"
+    t.integer "exams"
+    t.integer "exercises"
+    t.integer "number_of_sessions"
+    t.integer "session_durations"
+    t.float "teacher_view_mean"
+    t.float "student_view_mean"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_course_infos_on_course_id"
   end
 
   create_table "course_meetings", force: :cascade do |t|

@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  course_id: 1
+  resources: 1
+  exams: 1
+  exercises: 1
+  number_of_sessions: 1
+  session_durations: 1
+  teacher_view_mean: 1.5
+  student_view_mean: 1.5
+
+two:
+  course_id: 1
+  resources: 1
+  exams: 1
+  exercises: 1
+  number_of_sessions: 1
+  session_durations: 1
+  teacher_view_mean: 1.5
+  student_view_mean: 1.5

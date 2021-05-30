@@ -228,6 +228,40 @@ class MoodleCourse < ActiveRecord::Base
     #end
   end
 
+  def self.construct_course_info
+    for course in Course.all
+      resources = CourseModule.where(module_id: 17, course_id: course.mid).count
+      exams = CourseModule.where(module_id: 16, course_id: course.mid).count
+      exercises = CourseModule.where("module_id in (?) and course_id = ?", [1, 2], course.id).count
+      number_of_sessions =
+        Attendance.connection.exec_query("select asset_id from attendances 
+        where course_id = #{course.mid}
+        group by asset_id
+        order by asset_id
+        ").rows.count
+
+      session_durations =
+        Attendance.connection.exec_query("select max(duration) from attendances 
+        where course_id = #{course.mid}
+        group by asset_id").rows.flatten.inject(0, :+)
+
+      teacher_ids = CourseTeacher.where(course_id: course.mid).pluck(:user_id).uniq
+      teacher_view_mean =
+        MoodleCourse.connection.exec_query("select count(*)
+          from mdl_logstore_standard_log
+          where courseid = #{course.mid} and action = 'viewed' and target = 'course' and userid in (#{teacher_ids.join(",")})").rows.flatten[0] rescue 0
+
+      student_ids = CourseStudent.where(course_id: course.mid).pluck(:user_id).uniq
+      student_ids_count = CourseStudent.where(course_id: course.mid).pluck(:user_id).uniq.count
+      student_view_mean =
+        MoodleCourse.connection.exec_query("select
+        count(*)
+          from mdl_logstore_standard_log
+          where courseid = #{course.mid} and action = 'viewed' and target = 'course' and userid in (#{student_ids.join(",")})").rows.flatten[0] / student_ids_count rescue 0
+      course_info = CourseInfo.create(course_id: course.id, resources: resources, exams: exams, exercises: exercises, number_of_sessions: number_of_sessions, session_durations: session_durations, teacher_view_mean: teacher_view_mean, student_view_mean: student_view_mean)
+    end
+  end
+
   def self.prepare_semster(semster)
     p "Prepare Started"
     #ApplicationRecord.connection.exec_query("TRUNCATE courses, course_modules, meetings RESTART IDENTITY")
