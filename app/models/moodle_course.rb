@@ -265,6 +265,62 @@ class MoodleCourse < ActiveRecord::Base
     end
   end
 
+  def self.course_percentile
+    for course in Course.all
+      course_percentile = CoursePercentile.create(course_id: course.id)
+
+      resources = CourseInfo.connection.exec_query("SELECT course_id, PERCENT_RANK() over (order by resources) AS percentile
+      FROM course_infos")
+      for resource in resources
+        if resource["course_id"] == course.id
+          course_percentile.resources = resource["percentile"]
+        end
+      end
+
+      exams = CourseInfo.connection.exec_query("SELECT course_id, PERCENT_RANK() over (order by exams) AS percentile
+      FROM course_infos")
+      for exam in exams
+        if exam["course_id"] == course.id
+          course_percentile.exams = exam["percentile"]
+        end
+      end
+
+      exercises = CourseInfo.connection.exec_query("SELECT course_id, PERCENT_RANK() over (order by exercises) AS percentile
+      FROM course_infos")
+      for exercise in exercises
+        if exercise["course_id"] == course.id
+          course_percentile.exercises = exercise["percentile"]
+        end
+      end
+
+      session_durations = CourseInfo.connection.exec_query("SELECT course_id, PERCENT_RANK() over (order by session_durations) AS percentile
+      FROM course_infos")
+      for session_duration in session_durations
+        if session_duration["course_id"] == course.id
+          course_percentile.session_durations = session_duration["percentile"]
+        end
+      end
+
+      teacher_views = CourseInfo.connection.exec_query("SELECT course_id, PERCENT_RANK() over (order by teacher_view_mean) AS percentile
+      FROM course_infos")
+      for teacher_view in teacher_views
+        if teacher_view["course_id"] == course.id
+          course_percentile.teacher_view = teacher_view["percentile"]
+        end
+      end
+
+      student_views = CourseInfo.connection.exec_query("SELECT course_id, PERCENT_RANK() over (order by student_view_mean) AS percentile
+      FROM course_infos")
+      for student_view in student_views
+        if student_view["course_id"] == course.id
+          course_percentile.student_view = student_view["percentile"]
+        end
+      end
+
+      course_percentile.save
+    end
+  end
+
   def self.prepare_semster(semster)
     p "Prepare Started"
     #ApplicationRecord.connection.exec_query("TRUNCATE courses, course_modules, meetings RESTART IDENTITY")

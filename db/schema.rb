@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_29_175839) do
+ActiveRecord::Schema.define(version: 2021_05_31_092440) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -99,6 +99,20 @@ ActiveRecord::Schema.define(version: 2021_05_29_175839) do
     t.index ["course_id"], name: "index_course_modules_on_course_id"
     t.index ["mid"], name: "index_course_modules_on_mid"
     t.index ["module_id"], name: "index_course_modules_on_module_id"
+  end
+
+  create_table "course_percentiles", force: :cascade do |t|
+    t.float "resources"
+    t.integer "course_id"
+    t.float "exams"
+    t.float "exercises"
+    t.float "session_durations"
+    t.float "teacher_view"
+    t.float "student_view"
+    t.float "number_of_sessions"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_course_percentiles_on_course_id"
   end
 
   create_table "course_scos", force: :cascade do |t|

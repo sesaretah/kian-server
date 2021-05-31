@@ -1,0 +1,2 @@
+class CoursePercentile < ApplicationRecord
+end
