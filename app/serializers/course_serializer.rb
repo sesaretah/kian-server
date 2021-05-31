@@ -5,7 +5,7 @@ class CourseSerializer < ActiveModel::Serializer
              :meetings, :attendances, :modules, :teacher,
              :bb_meetings, :number_of_bb_meetings, :bb_avarage,
              :student_view_histogram, :teacher_view_histogram,
-             :students, :asset_sessions, :max
+             :students, :asset_sessions, :max, :course_percentile
 
   def id
     object.mid
@@ -108,5 +108,9 @@ class CourseSerializer < ActiveModel::Serializer
 
   def modules
     object.course_modules.where("module_id != ? and module_id != ?", 28, 29).group("module_id").count
+  end
+
+  def course_percentile
+    CoursePercentile.where(course_id: object.mid).first
   end
 end
