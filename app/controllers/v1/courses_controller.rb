@@ -52,13 +52,14 @@ class V1::CoursesController < ApplicationController
   end
 
   def show
-    @course = Course.find_by_mid(params[:id])
+    @course = Course.find_by_uuid(params[:id])
+    if @course.blank?
+      @course = Course.find_by_mid(params[:id])
+    end
     if @course.blank?
       @course = Course.find_by_serial(params[:id])
     end
-    if @course.blank?
-      @course = Course.find_by_uuid(params[:id])
-    end
+
     p "%%%%%%"
     p @course
     p params[:id]

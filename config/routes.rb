@@ -37,6 +37,8 @@ Rails.application.routes.draw do
     resources :users
     resources :courses
 
+    get "/courses/:uuid", to: "courses#show"
+
     post "/users/assignments", to: "users#assignments"
     get "/users/assignments/delete", to: "users#delete_assignment"
     post "/users/login", to: "users#login"
