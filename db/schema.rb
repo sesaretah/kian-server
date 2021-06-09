@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_31_092440) do
+ActiveRecord::Schema.define(version: 2021_06_09_074443) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -149,7 +149,9 @@ ActiveRecord::Schema.define(version: 2021_05_31_092440) do
     t.integer "faculty_id"
     t.integer "group_id"
     t.integer "semster"
+    t.string "uuid"
     t.index ["mid"], name: "index_courses_on_mid"
+    t.index ["uuid"], name: "index_courses_on_uuid"
   end
 
   create_table "faculties", force: :cascade do |t|
