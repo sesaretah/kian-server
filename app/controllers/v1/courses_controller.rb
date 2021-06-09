@@ -61,11 +61,12 @@ class V1::CoursesController < ApplicationController
     if @course.blank?
       @course = Course.find_by_serial(params[:id])
     end
-    logger.error(@course)
+    logger.error(@course.uuid)
+    logger.error(@course.section)
     logger.error(params[:id])
     logger.error(current_user)
 
-    if @course.uuid == params[:id] || (!current_user.blank? && Skope.is_able?(current_user, @course.section))
+    if (@course.uuid == params[:id]) || (!current_user.blank? && Skope.is_able?(current_user, @course.section))
       render json: { data: CourseSerializer.new(@course).as_json, klass: "Course" }, status: :ok
     else
       render json: { data: [], klass: "Course" }, status: :ok
