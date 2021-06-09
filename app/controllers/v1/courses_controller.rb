@@ -1,4 +1,6 @@
 class V1::CoursesController < ApplicationController
+  require "logger"
+
   def index
     result = []
     courses = Course.where("serial like ?", "%399%").paginate(page: 1, per_page: 100)
@@ -59,10 +61,9 @@ class V1::CoursesController < ApplicationController
     if @course.blank?
       @course = Course.find_by_serial(params[:id])
     end
-
-    p "%%%%%%"
-    p @course
-    p params[:id]
+    logger.error(@course)
+    logger.error(params[:id])
+    logger.error(current_user)
 
     if @course.uuid == params[:id] || (!current_user.blank? && Skope.is_able?(current_user, @course.section))
       render json: { data: CourseSerializer.new(@course).as_json, klass: "Course" }, status: :ok
