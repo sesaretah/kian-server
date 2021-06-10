@@ -1,8 +1,24 @@
 class Course < ApplicationRecord
   self.primary_key = "mid"
   require "securerandom"
+  require "csv"
   has_many :course_modules
   has_many :course_teachers
+
+  def self.export_courses
+    file = "#{Rails.root}/public/course_data.csv"
+
+    CSV.open(file, "w") do |writer|
+      for course in Course.all
+        cms = CourseMeeting.where(course_id: course.id).count
+        bms = BbMeeting.where(course_id: course.id).count
+        cmd = CourseMeeting.where(course_id: course.id).pluck(:duration).join(", ")
+        bmd = BbMeeting.where(course_id: course.id).pluck(:duration).join(", ")
+        teachers = CourseTeacher.where(course_id: course.id).pluck(:fullname).uniq.join(", ")
+        writer << [course.serial, course.title, teachers, cms, bms, cmd, bmd]
+      end
+    end
+  end
 
   def self.set_uuid_for_all
     for course in self.all
