@@ -5,7 +5,8 @@ class CourseSerializer < ActiveModel::Serializer
              :meetings, :attendances, :modules, :teacher,
              :bb_meetings, :number_of_bb_meetings, :bb_avarage,
              :student_view_histogram, :teacher_view_histogram,
-             :students, :asset_sessions, :max, :course_percentile
+             :students, :asset_sessions, :max, :course_percentile,
+             :asset_start
 
   def id
     object.mid
