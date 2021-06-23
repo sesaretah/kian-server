@@ -100,6 +100,13 @@ class CourseSerializer < ActiveModel::Serializer
       ")
   end
 
+  def asset_start
+    Attendance.connection.exec_query("select distinct on (asset_id) asset_id, start_time from attendances 
+      where course_id = #{object.mid}
+      group by asset_id, start_time
+      ")
+  end
+
   def max
     Attendance.connection.exec_query("select asset_id, max(duration) from attendances 
     where course_id = #{object.mid}
