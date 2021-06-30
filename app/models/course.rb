@@ -28,7 +28,7 @@ class Course < ApplicationRecord
             where courseid = #{course.mid} and action = 'viewed' and target = 'course' and userid in (#{teacher_ids.join(",")})
           ") rescue 0
 
-        writer << [course.serial, section, faculty, course.title, teachers, cms, bms, links, resources, teacher_views, assignments]
+        writer << [course.serial, section, faculty, course.title, teachers, cms, bms, links, resources, teacher_views.rows[0], assignments]
       end
     end
   end
