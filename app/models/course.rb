@@ -5,38 +5,39 @@ class Course < ApplicationRecord
   has_many :course_modules
   has_many :course_teachers
 
-  def self.export_courses(courses, section)
+  def self.export_courses(section)
     file = "#{Rails.root}/public/sections/#{section}.csv"
 
     CSV.open(file, "w") do |writer|
-      for course in courses
-        cms = CourseMeeting.where("course_id = ? and duration > ?", course.id, 30).count
-        bms = BbMeeting.where("course_id = ? and duration > ?", course.id, 30).count
-        cmd = CourseMeeting.where(course_id: course.id).pluck(:duration).join(", ")
-        bmd = BbMeeting.where(course_id: course.id).pluck(:duration).join(", ")
-        links = CourseModule.where("course_id = ? and module_id = ?", course.mid, 20).count
-        assignments = CourseModule.where("course_id = ? and module_id in (?)", course.mid, [1, 2]).count
-        resources = CourseModule.where("course_id = ? and module_id in (?)", course.mid, [8, 17]).count
-        teachers = CourseTeacher.where(course_id: course.id).pluck(:fullname).uniq.join(", ")
-        faculty = course.faculty.fullname rescue nil
-        section = course.section.title rescue nil
+      for course in Course.all
+        if course.faculty_id.to_s[0..1] == section.to_s
+          cms = CourseMeeting.where("course_id = ? and duration > ?", course.id, 30).count
+          bms = BbMeeting.where("course_id = ? and duration > ?", course.id, 30).count
+          cmd = CourseMeeting.where(course_id: course.id).pluck(:duration).join(", ")
+          bmd = BbMeeting.where(course_id: course.id).pluck(:duration).join(", ")
+          links = CourseModule.where("course_id = ? and module_id = ?", course.mid, 20).count
+          assignments = CourseModule.where("course_id = ? and module_id in (?)", course.mid, [1, 2]).count
+          resources = CourseModule.where("course_id = ? and module_id in (?)", course.mid, [8, 17]).count
+          teachers = CourseTeacher.where(course_id: course.id).pluck(:fullname).uniq.join(", ")
+          faculty = course.faculty.fullname rescue nil
+          section = course.section.title rescue nil
 
-        teacher_ids = CourseTeacher.where(course_id: course.mid).pluck(:user_id).uniq
-        teacher_views = MoodleCourse.connection.exec_query("select
+          teacher_ids = CourseTeacher.where(course_id: course.mid).pluck(:user_id).uniq
+          teacher_views = MoodleCourse.connection.exec_query("select
                 count(*)
             from mdl_logstore_standard_log
             where courseid = #{course.mid} and action = 'viewed' and target = 'course' and userid in (#{teacher_ids.join(",")})
           ").rows[0].join("") rescue 0
 
-        writer << [course.serial, section, faculty, course.title, teachers, cms, bms, links, resources, teacher_views, assignments]
+          writer << [course.serial, section, faculty, course.title, teachers, cms, bms, links, resources, teacher_views, assignments]
+        end
       end
     end
   end
 
   def self.export_section
     for section in Section.all
-      courses = Course.where("faculty_id like cast(? as varchar)%", section.mid)
-      self.export_courses(courses, section.mid)
+      self.export_courses(section.mid)
     end
   end
 
