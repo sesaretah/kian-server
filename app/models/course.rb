@@ -5,11 +5,11 @@ class Course < ApplicationRecord
   has_many :course_modules
   has_many :course_teachers
 
-  def self.export_courses
-    file = "#{Rails.root}/public/course_data.csv"
+  def self.export_courses(courses, section)
+    file = "#{Rails.root}/public/sections/#{section}.csv"
 
     CSV.open(file, "w") do |writer|
-      for course in Course.all
+      for course in courses
         cms = CourseMeeting.where("course_id = ? and duration > ?", course.id, 30).count
         bms = BbMeeting.where("course_id = ? and duration > ?", course.id, 30).count
         cmd = CourseMeeting.where(course_id: course.id).pluck(:duration).join(", ")
@@ -26,10 +26,17 @@ class Course < ApplicationRecord
                 count(*)
             from mdl_logstore_standard_log
             where courseid = #{course.mid} and action = 'viewed' and target = 'course' and userid in (#{teacher_ids.join(",")})
-          ").rows[0] rescue 0
+          ").rows[0].join("") rescue 0
 
         writer << [course.serial, section, faculty, course.title, teachers, cms, bms, links, resources, teacher_views, assignments]
       end
+    end
+  end
+
+  def self.export_section
+    for section in Section.all
+      courses = Course.where("faculty_id like ?%", section.mid)
+      self.export_courses(courses, section.mid)
     end
   end
 
