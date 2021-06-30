@@ -15,6 +15,7 @@ class Course < ApplicationRecord
         cmd = CourseMeeting.where(course_id: course.id).pluck(:duration).join(", ")
         bmd = BbMeeting.where(course_id: course.id).pluck(:duration).join(", ")
         links = CourseModule.where("course_id = ? and module_id = ?", course.mid, 20).count
+        assignments = CourseModule.where("course_id = ? and module_id in (?)", course.mid, [1, 2]).count
         resources = CourseModule.where("course_id = ? and module_id in (?)", course.mid, [8, 17]).count
         teachers = CourseTeacher.where(course_id: course.id).pluck(:fullname).uniq.join(", ")
         faculty = course.faculty.fullname rescue nil
@@ -25,9 +26,9 @@ class Course < ApplicationRecord
                 count(*)
             from mdl_logstore_standard_log
             where courseid = #{course.mid} and action = 'viewed' and target = 'course' and userid in (#{teacher_ids.join(",")})
-          ")
+          ") rescue 0
 
-        writer << [course.serial, section, faculty, course.title, teachers, cms, bms, links, resources, teacher_views]
+        writer << [course.serial, section, faculty, course.title, teachers, cms, bms, links, resources, teacher_views, assignments]
       end
     end
   end
