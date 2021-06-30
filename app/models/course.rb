@@ -35,7 +35,7 @@ class Course < ApplicationRecord
 
   def self.export_section
     for section in Section.all
-      courses = Course.where("faculty_id like ?%", section.mid)
+      courses = Course.where("faculty_id like '?%'", section.mid)
       self.export_courses(courses, section.mid)
     end
   end
