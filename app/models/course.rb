@@ -10,14 +10,24 @@ class Course < ApplicationRecord
 
     CSV.open(file, "w") do |writer|
       for course in Course.all
-        cms = CourseMeeting.where(course_id: course.id).count
-        bms = BbMeeting.where(course_id: course.id).count
+        cms = CourseMeeting.where("course_id = ? and duration > ?", course.id, 30).count
+        bms = BbMeeting.where("course_id = ? and duration > ?", course.id, 30).count
         cmd = CourseMeeting.where(course_id: course.id).pluck(:duration).join(", ")
         bmd = BbMeeting.where(course_id: course.id).pluck(:duration).join(", ")
+        links = CourseModule.where("course_id = ? and module_id = ?", course.mid, 20).count
+        resources = CourseModule.where("course_id = ? and module_id in (?)", course.mid, [8, 17]).count
         teachers = CourseTeacher.where(course_id: course.id).pluck(:fullname).uniq.join(", ")
         faculty = course.faculty.fullname rescue nil
         section = course.section.title rescue nil
-        writer << [course.serial, section, faculty, course.title, teachers, cms, bms, cmd, bmd]
+
+        teacher_ids = CourseTeacher.where(course_id: course.mid).pluck(:user_id).uniq
+        teacher_views = MoodleCourse.connection.exec_query("select
+                count(*)
+            from mdl_logstore_standard_log
+            where courseid = #{course.mid} and action = 'viewed' and target = 'course' and userid in (#{teacher_ids.join(",")})
+          ")
+
+        writer << [course.serial, section, faculty, course.title, teachers, cms, bms, links, resources, teacher_views]
       end
     end
   end
