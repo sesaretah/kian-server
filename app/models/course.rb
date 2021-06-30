@@ -5,15 +5,15 @@ class Course < ApplicationRecord
   has_many :course_modules
   has_many :course_teachers
 
-  def self.export_courses(section)
-    file = "#{Rails.root}/public/sections/#{section}.csv"
+  def self.export_courses(sec)
+    file = "#{Rails.root}/public/sections/#{sec.mid}.csv"
 
     CSV.open(file, "w") do |writer|
       for course in Course.all
         p "$$$$$$$$$$$$$$$$$$$$$$$$"
         p course.faculty_id.to_s[0..1]
-        p section.to_s
-        if course.faculty_id.to_s[0..1] == section.to_s
+        p sec.mid.to_s
+        if course.faculty_id.to_s[0..1] == sec.mid.to_s
           cms = CourseMeeting.where("course_id = ? and duration > ?", course.id, 30).count
           bms = BbMeeting.where("course_id = ? and duration > ?", course.id, 30).count
           cmd = CourseMeeting.where(course_id: course.id).pluck(:duration).join(", ")
@@ -40,7 +40,7 @@ class Course < ApplicationRecord
 
   def self.export_section
     for section in Section.all
-      Course.export_courses(section.mid)
+      Course.export_courses(section)
     end
   end
 
