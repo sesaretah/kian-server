@@ -11,6 +11,8 @@ class Course < ApplicationRecord
     CSV.open(file, "w") do |writer|
       for course in Course.all
         p "$$$$$$$$$$$$$$$$$$$$$$$$"
+        p course.faculty_id.to_s[0..1]
+        p section.to_s
         if course.faculty_id.to_s[0..1] == section.to_s
           cms = CourseMeeting.where("course_id = ? and duration > ?", course.id, 30).count
           bms = BbMeeting.where("course_id = ? and duration > ?", course.id, 30).count
