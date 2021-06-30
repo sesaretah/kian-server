@@ -37,7 +37,7 @@ class Course < ApplicationRecord
 
   def self.export_section
     for section in Section.all
-      self.export_courses(section.mid)
+      Course.export_courses(section.mid)
     end
   end
 
