@@ -15,7 +15,9 @@ class Course < ApplicationRecord
         cmd = CourseMeeting.where(course_id: course.id).pluck(:duration).join(", ")
         bmd = BbMeeting.where(course_id: course.id).pluck(:duration).join(", ")
         teachers = CourseTeacher.where(course_id: course.id).pluck(:fullname).uniq.join(", ")
-        writer << [course.serial, course.title, teachers, cms, bms, cmd, bmd]
+        faculty = course.faculty.fullname rescue nil
+        section = course.section.title rescue nil
+        writer << [course.serial, section, faculty, course.title, teachers, cms, bms, cmd, bmd]
       end
     end
   end
