@@ -6,7 +6,7 @@ class Course < ApplicationRecord
   has_many :course_teachers
 
   def self.export_courses(sec)
-    file = "#{Rails.root}/public/sections/#{sec.mid}.csv"
+    file = "#{Rails.root}/public/sections/#{sec.title}.csv"
 
     CSV.open(file, "w") do |writer|
       for course in Course.all
