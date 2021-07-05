@@ -89,7 +89,7 @@ class MoodleCourse < ActiveRecord::Base
         if cs.blank? #&& course_sco["course"].to_i && course_sco["meetingscoid"].to_i
           cs = CourseSco.create(course_id: course_sco["course"], sco_id: course_sco["meetingscoid"], module: i)
         else
-          cs.save
+          # cs.save
         end
       end
     end
