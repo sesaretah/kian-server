@@ -7,6 +7,15 @@ class V1::CoursesController < ApplicationController
     render json: { data: ActiveModel::SerializableResource.new(Course.viewable(courses, current_user), each_serializer: CourseShowSerializer).as_json, klass: "Course" }, status: :ok
   end
 
+  def uuider
+    course = Course.find_by_mid(params[:id])
+    if !course.blank?
+      render json: { uuid: course.uuid }, status: :ok
+    else
+      render json: {}, status: :ok
+    end
+  end
+
   def search
     if !params[:q].blank? && params[:q].length > 2
       courses = Course.search params[:q], star: true, :max_matches => 1_000, :per_page => 1_000

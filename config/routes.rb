@@ -37,6 +37,8 @@ Rails.application.routes.draw do
     resources :users
     resources :courses
 
+    get "/courses/uuider/:id", to: "courses#uuider"
+
     get "/courses/:uuid", to: "courses#show"
 
     post "/users/assignments", to: "users#assignments"
