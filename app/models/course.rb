@@ -11,8 +11,10 @@ class Course < ApplicationRecord
     CSV.open(file, "w") do |writer|
       for course in Course.all
         if course.faculty_id.to_s[0..1] == sec.mid.to_s
-          cms = CourseMeeting.where("course_id = ? and duration > ?", course.id, 30).count
-          bms = BbMeeting.where("course_id = ? and duration > ?", course.id, 30).count
+          cms30 = CourseMeeting.where("course_id = ? and duration > ?", course.id, 30).count
+          bms30 = BbMeeting.where("course_id = ? and duration > ?", course.id, 30).count
+          cms = CourseMeeting.where("course_id = ? and duration > ?", course.id, 5).count
+          bms = BbMeeting.where("course_id = ? and duration > ?", course.id, 5).count
           cmd = CourseMeeting.where(course_id: course.id).pluck(:duration).join(", ")
           bmd = BbMeeting.where(course_id: course.id).pluck(:duration).join(", ")
           links = CourseModule.where("course_id = ? and module_id = ?", course.mid, 20).count
@@ -29,7 +31,7 @@ class Course < ApplicationRecord
             where courseid = #{course.mid} and action = 'viewed' and target = 'course' and userid in (#{teacher_ids.join(",")})
           ").rows[0].join("") rescue 0
 
-          writer << [course.serial, section, faculty, course.title, teachers, cms, bms, links, resources, teacher_views, assignments]
+          writer << [course.serial, section, faculty, course.title, teachers, cms30, bms30, cms, bms, links, resources, teacher_views, assignments]
         end
       end
     end
