@@ -7,7 +7,7 @@ class Course < ApplicationRecord
 
   def self.export_khaksar
     file = "#{Rails.root}/public/khaksar.csv"
-    rows = ApplicationRecord.connection.exec_query("SELECT exams + exercises + session_durations + teacher_view + student_view + resources AS s, serial, fullname FROM public.course_percentiles join public.courses on  public.course_percentiles.course_id = public.courses.mid join public.course_teachers on  public.course_percentiles.course_id = public.course_teachers.course_id ORDER BY s desc LIMIT 100").rows
+    rows = ApplicationRecord.connection.exec_query("SELECT exams + exercises + session_durations + teacher_view + student_view + resources AS s, serial, fullname FROM public.course_percentiles join public.courses on  public.course_percentiles.course_id = public.courses.mid join public.course_teachers on  public.course_percentiles.course_id = public.course_teachers.course_id ORDER BY s desc LIMIT 10000").rows
     CSV.open(file, "w") do |writer|
       for row in rows
         writer << [row[0], row[1], row[2]]
