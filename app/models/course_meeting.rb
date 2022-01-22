@@ -9,7 +9,7 @@ class CourseMeeting < ApplicationRecord
     agent = Mechanize.new
 
     # Get the flickr sign in page
-    page = agent.get "https://elearn5.ut.ac.ir/login/index.php?authutcas=NOCAS"
+    page = agent.get "https://212.33.201.234"
 
     # Fill out the login form
     form = page.form_with :id => "login"
@@ -34,6 +34,8 @@ class CourseMeeting < ApplicationRecord
           label = "5"
         when 42
           label = "6"
+        when 47
+          label = "7"
         end
         course_id = course_module.course_id
         module_id = course_module.mid
@@ -41,7 +43,7 @@ class CourseMeeting < ApplicationRecord
           p course_id
           p course_module.mid
           p "    "
-          course = agent.get "https://elearn5.ut.ac.ir/mod/adobeconnect" + label.to_s + "/view.php?id=" + module_id.to_s rescue nil
+          course = agent.get "http://212.33.201.234/mod/adobeconnect" + label.to_s + "/view.php?id=" + module_id.to_s rescue nil
           if !course.blank?
             doc = Nokogiri::HTML(course.body)
             table = doc.search("table")[0]

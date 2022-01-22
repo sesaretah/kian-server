@@ -77,7 +77,7 @@ class MoodleCourse < ActiveRecord::Base
   end
 
   def self.import_meetings
-    for i in 1..5
+    for i in 1..7
       self.import_meeting(i)
     end
   end
