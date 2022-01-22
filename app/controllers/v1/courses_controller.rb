@@ -3,7 +3,8 @@ class V1::CoursesController < ApplicationController
 
   def index
     result = []
-    courses = Course.where("serial like ?", "%399%").paginate(page: 1, per_page: 100)
+    #courses = Course.where("serial like ?", "%399%").paginate(page: 1, per_page: 100)
+    courses = Course.all.paginate(page: 1, per_page: 100)
     render json: { data: ActiveModel::SerializableResource.new(Course.viewable(courses, current_user), each_serializer: CourseShowSerializer).as_json, klass: "Course" }, status: :ok
   end
 
