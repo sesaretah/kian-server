@@ -17,18 +17,25 @@ class CourseSco < ApplicationRecord
     case self.module
     when ""
       domain = "http://vclas19.ut.ac.ir"
+      password = ""
     when "2"
       domain = "http://vclas20.ut.ac.ir"
+      password = ""
     when "3"
       domain = "http://vclas19.ut.ac.ir"
+      password = ""
     when "4"
       domain = "http://vclas20.ut.ac.ir"
+      password = ""
     when "5"
-      domain = "http://vclas11.ut.ac.ir"
+      domain = "http://194.225.14.90"
+      password = ""
     when "6"
       domain = "http://vclas12.ut.ac.ir"
+      password = ""
     when "7"
-      domain = "http://212.33.201.253"
+      domain = "http://31.7.70.9"
+      password = ""
     end
 
     page = agent.get "#{domain}/api/xml?action=login&login=itadmin&password=" rescue nil
