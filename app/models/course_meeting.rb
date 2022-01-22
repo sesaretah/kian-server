@@ -17,7 +17,7 @@ class CourseMeeting < ApplicationRecord
     form.password = ""
     form.submit
 
-    modules = [28, 36, 37, 38, 39, 42]
+    modules = [28, 36, 37, 38, 39, 42, 47]
     for course in Course.all
       course_modules = CourseModule.where("module_id in (?) and course_id = ?", modules, course.id)
       for course_module in course_modules
