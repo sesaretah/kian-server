@@ -29,7 +29,7 @@ class CourseSerializer < ActiveModel::Serializer
         from mdl_logstore_standard_log
         where courseid = #{object.mid} and action = 'viewed' and target = 'course' and userid in (#{student_ids.join(",")})
         group by 1
-        order by Day")
+        order by Day") rescue []
   end
 
   def teacher_view_histogram
@@ -40,7 +40,7 @@ class CourseSerializer < ActiveModel::Serializer
         from mdl_logstore_standard_log
         where courseid = #{object.mid} and action = 'viewed' and target = 'course' and userid in (#{teacher_ids.join(",")})
         group by 1
-        order by Day")
+        order by Day") rescue []
   end
 
   def number_of_meetings

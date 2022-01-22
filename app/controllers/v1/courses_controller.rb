@@ -27,14 +27,14 @@ class V1::CoursesController < ApplicationController
   end
 
   def faculty
-    courses = Course.where(faculty_id: params[:faculty_id], semster: 3992)
+    courses = Course.where(faculty_id: params[:faculty_id], semster: 4001)
     params[:start].blank? ? time_start = Time.at(1612965838) : time_start = Time.at(params[:start].to_i)
     params[:end].blank? ? time_end = Time.now : time_end = Time.at(params[:end].to_i)
     render json: { data: FacultySerializer.new(courses, scope: { time_start: time_start, time_end: time_end }).as_json, klass: "Faculty" }, status: :ok
   end
 
   def inactive
-    courses = Course.where(faculty_id: params[:faculty_id], semster: 3992)
+    courses = Course.where(faculty_id: params[:faculty_id], semster: 4001)
     render json: { data: InactiveSerializer.new(courses).as_json, klass: "Inactive" }, status: :ok
   end
 

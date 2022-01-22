@@ -16,17 +16,19 @@ class CourseSco < ApplicationRecord
 
     case self.module
     when ""
-      domain = "http://vclas16.ut.ac.ir"
+      domain = "http://vclas19.ut.ac.ir"
     when "2"
-      domain = "http://vclas13.ut.ac.ir"
+      domain = "http://vclas20.ut.ac.ir"
     when "3"
-      domain = "http://vclas18.ut.ac.ir"
+      domain = "http://vclas19.ut.ac.ir"
     when "4"
-      domain = "http://vclas18.ut.ac.ir"
+      domain = "http://vclas20.ut.ac.ir"
     when "5"
-      domain = "http://vclas27.ut.ac.ir"
+      domain = "http://vclas11.ut.ac.ir"
     when "6"
-      domain = "http://vclas13.ut.ac.ir"
+      domain = "http://vclas12.ut.ac.ir"
+    when "7"
+      domain = "http://212.33.201.253"
     end
 
     page = agent.get "#{domain}/api/xml?action=login&login=itadmin&password=" rescue nil
