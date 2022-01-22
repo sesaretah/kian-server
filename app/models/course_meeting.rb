@@ -9,7 +9,7 @@ class CourseMeeting < ApplicationRecord
     agent = Mechanize.new
 
     # Get the flickr sign in page
-    page = agent.get "https://212.33.201.234"
+    page = agent.get "http://212.33.201.234"
 
     # Fill out the login form
     form = page.form_with :id => "login"
