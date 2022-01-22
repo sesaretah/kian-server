@@ -19,6 +19,26 @@ class MoodleCourse < ActiveRecord::Base
     end
   end
 
+  def self.import_by_csv(server)
+    ids = import_csv(server)
+    insert_to_db(ids)
+  end
+
+  def self.insert_to_db(ids)
+    moodle_courses = MoodleCourse.connection.exec_query("select * from mdl_course where id in (?)", ids)
+    for moodle_course in moodle_courses
+      course = Course.where(mid: moodle_course["id"]).first
+      if course.blank?
+        Course.create(mid: moodle_course["id"], title: UnicodeFixer.fix(moodle_course["fullname"]), serial: moodle_course["idnumber"])
+      end
+    end
+  end
+
+  def self.import_csv(server)
+    table = CSV.parse(File.read("#{Rails.root}/public/import/course_id_#{server}.csv"), headers: true)
+    table.by_col[0].uniq
+  end
+
   def self.import_course_modules(semster)
     last_mid = 0
     last_course_modue = CourseModule.all.order("mid desc").first
