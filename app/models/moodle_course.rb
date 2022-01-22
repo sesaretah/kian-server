@@ -25,7 +25,7 @@ class MoodleCourse < ActiveRecord::Base
   end
 
   def self.insert_to_db(ids)
-    moodle_courses = MoodleCourse.connection.exec_query("select * from mdl_course where id in (?)", ids)
+    moodle_courses = MoodleCourse.connection.exec_query("select * from mdl_course where id in (#{ids.join(",")})")
     for moodle_course in moodle_courses
       course = Course.where(mid: moodle_course["id"]).first
       if course.blank?
