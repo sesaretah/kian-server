@@ -24,27 +24,28 @@ class V1::UsersController < ApplicationController
     end
   end
 
-  def sign_up
-    if params["domains"].is_a? Integer
-      domains = [params["domains"].to_i]
-    else
-      if !params["domains"].blank?
-        domains = params["domains"].split(",")
-      end
-    end
-    @user = User.create(email: params["email"], password: params["password"], password_confirmation: params["password"], last_login: DateTime.now, domains: domains)
-    render :json => { data: { result: "OK", token: JWTWrapper.encode({ user_id: @user.id }), user_id: @user.id }, klass: "SignUp" }.to_json, :callback => params["callback"]
-  end
-
   # def sign_up
-  #   @user = User.new(email: params['email'], password: params['password'], password_confirmation: params['password_confirmation'])
-  #   if @user.save
-  #     Profile.create(name: params['name'], surename: params['surename'], user_id: @user.id)
-  #     render :json => { data: {result: 'OK', token: JWTWrapper.encode({ user_id: @user.id }), user_id: @user.id}, klass: 'User'}.to_json, :callback => params['callback']
+  #   domains = []
+  #   if params["domains"].is_a? Integer
+  #     domains = [params["domains"].to_i]
   #   else
-  #     render :json => {result: 'ERROR', error: @user.errors }.to_json , status: :unprocessable_entity
+  #     if !params["domains"].blank?
+  #       domains = params["domains"].split(",")
+  #     end
   #   end
+  #   @user = User.create(email: params["email"], password: params["password"], password_confirmation: params["password"], last_login: DateTime.now, domains: domains)
+  #   render :json => { data: { result: "OK", token: JWTWrapper.encode({ user_id: @user.id }), user_id: @user.id }, klass: "SignUp" }.to_json, :callback => params["callback"]
   # end
+
+  def sign_up
+    @user = User.new(email: params["email"], password: params["email"], password_confirmation: params["email"])
+    if @user.save
+      Profile.create(name: params["name"], surename: params["surename"], user_id: @user.id)
+      render :json => { data: { result: "OK", token: JWTWrapper.encode({ user_id: @user.id }), user_id: @user.id }, klass: "SignUp" }.to_json, :callback => params["callback"]
+    else
+      render :json => { result: "ERROR", error: @user.errors }.to_json, status: :unprocessable_entity
+    end
+  end
 
   def validate_token
     if !current_user.blank?

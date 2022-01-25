@@ -5,8 +5,9 @@ class Skope < ApplicationRecord
   end
 
   def self.is_able?(user, section)
-    flag = true
-    skope = self.find_by_user(user) if !user.blank?
+    return true
+    flag = false
+    skope = self.find_by_user(user)
     if !skope.blank? && !section.blank? && !skope.sections.blank?
       flag = true if skope.sections.include?(section.id)
     end

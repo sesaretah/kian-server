@@ -22,6 +22,7 @@ class CourseSerializer < ActiveModel::Serializer
   end
 
   def student_view_histogram
+    return []
     student_ids = CourseStudent.where(course_id: object.mid).pluck(:user_id).uniq
     MoodleCourse.connection.exec_query("select
             date_trunc('day', TO_TIMESTAMP(timecreated)) as Day,
@@ -33,6 +34,7 @@ class CourseSerializer < ActiveModel::Serializer
   end
 
   def teacher_view_histogram
+    return []
     teacher_ids = CourseTeacher.where(course_id: object.mid).pluck(:user_id).uniq
     MoodleCourse.connection.exec_query("select
             date_trunc('day', TO_TIMESTAMP(timecreated)) as Day,
