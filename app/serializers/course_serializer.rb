@@ -117,7 +117,7 @@ class CourseSerializer < ActiveModel::Serializer
   end
 
   def modules
-    object.course_modules.where("module_id not in (?)", [28, 29, 36, 37, 38, 39, 47, 48]).group("module_id").count
+    object.course_modules.where("module_id not in (?)", [28, 29, 36, 37, 38, 39, 42, 41, 47, 48]).group("module_id").count
   end
 
   def course_percentile
