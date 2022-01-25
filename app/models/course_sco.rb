@@ -36,6 +36,9 @@ class CourseSco < ApplicationRecord
     when "7"
       domain = "http://31.7.70.9"
       password = ""
+    when "8"
+      domain = "http://31.7.70.9"
+      password = ""
     end
 
     page = agent.get "#{domain}/api/xml?action=login&login=itadmin&password=" rescue nil
