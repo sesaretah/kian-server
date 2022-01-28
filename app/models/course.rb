@@ -66,7 +66,7 @@ class Course < ApplicationRecord
           teachers = CourseTeacher.where(course_id: course.id).pluck(:fullname).uniq.join(", ")
 
           all_count = Attendance.connection.exec_query("select asset_id from attendances where course_id = #{course.id} and duration > 1000 group by asset_id").count
-          writer << [course.serial, course.title, teachers, all_count, cms30, bms30, cms, bms, links, resources, assignments]
+          writer << [course.serial, course.title, teachers, all_count, cms30, bms30, cmd, bmd, links, resources, assignments]
         end
         i += 1
       end
