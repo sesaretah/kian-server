@@ -47,6 +47,31 @@ class Course < ApplicationRecord
     end
   end
 
+  def self.special_export(title)
+    file = "#{Rails.root}/public/#{sec.title}.csv"
+
+    CSV.open(file, "w") do |writer|
+      for course in Course.all
+          cms30 = CourseMeeting.where("course_id = ? and duration > ?", course.id, 3).count
+          bms30 = BbMeeting.where("course_id = ? and duration > ?", course.id, 3).count
+          cms = CourseMeeting.where("course_id = ? and duration > ?", course.id, 5).count
+          bms = BbMeeting.where("course_id = ? and duration > ?", course.id, 5).count
+          cmd = CourseMeeting.where(course_id: course.id).pluck(:duration).join(", ")
+          bmd = BbMeeting.where(course_id: course.id).pluck(:duration).join(", ")
+          links = CourseModule.where("course_id = ? and module_id = ?", course.mid, 20).count
+          assignments = CourseModule.where("course_id = ? and module_id in (?)", course.mid, [1, 2]).count
+          resources = CourseModule.where("course_id = ? and module_id in (?)", course.mid, [8, 17]).count
+          teachers = CourseTeacher.where(course_id: course.id).pluck(:fullname).uniq.join(", ")
+
+          attendances = Attendance.connection.exec_query("select asset_id, duration from attendances where course_id = #{Course.last.id} and duration > 1000 group by asset_id, duration order by duration desc")
+          all_duartion = attendances.pluck('duration').inject(:+)/ 3600 
+          all_count = attendances.count
+          writer << [course.serial, course.title, teachers,all_duartion, all_count, cms30, bms30, cms, bms, links, resources, assignments]
+        end
+      end
+    end
+  end
+
   def self.export_section
     for section in Section.all
       Course.export_courses(section)
