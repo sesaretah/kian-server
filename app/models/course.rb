@@ -65,10 +65,8 @@ class Course < ApplicationRecord
           resources = CourseModule.where("course_id = ? and module_id in (?)", course.mid, [8, 17]).count
           teachers = CourseTeacher.where(course_id: course.id).pluck(:fullname).uniq.join(", ")
 
-          attendances = Attendance.connection.exec_query("select asset_id, duration from attendances where course_id = #{course.id} and duration > 1000 group by asset_id, duration order by duration desc")
-          all_duartion = attendances.pluck("duration").inject(:+) / 3600 rescue 0
-          all_count = attendances.count
-          writer << [course.serial, course.title, teachers, all_duartion, all_count, cms30, bms30, cms, bms, links, resources, assignments]
+          all_count = Attendance.connection.exec_query("select asset_id from attendances where course_id = #{Course.last.id} and duration > 1000 group by asset_id").count
+          writer << [course.serial, course.title, teachers, all_count, cms30, bms30, cms, bms, links, resources, assignments]
         end
         i += 1
       end
