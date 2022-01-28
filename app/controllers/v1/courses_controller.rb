@@ -20,7 +20,7 @@ class V1::CoursesController < ApplicationController
   def search
     if !params[:q].blank? && params[:q].length > 2
       courses = Course.search params[:q], star: true, :max_matches => 1_000, :per_page => 1_000
-      render json: { data: ActiveModel::SerializableResource.new(Course.viewable(courses, current_user), each_serializer: CourseShowSerializer).as_json, klass: "Course" }, status: :ok
+      render json: { data: ActiveModel::SerializableResource.new(courses, each_serializer: CourseShowSerializer).as_json, klass: "Course" }, status: :ok
     else
       render json: { data: [], klass: "Course" }, status: :ok
     end
