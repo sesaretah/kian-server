@@ -48,7 +48,7 @@ class Course < ApplicationRecord
   end
 
   def self.special_export(title)
-    file = "#{Rails.root}/public/#{sec.title}.csv"
+    file = "#{Rails.root}/public/#{title}.csv"
 
     CSV.open(file, "w") do |writer|
       for course in Course.all
